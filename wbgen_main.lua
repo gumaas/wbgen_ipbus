@@ -42,7 +42,7 @@ local commands_string = [[options:
   -l, --lang=LANG         Set the output Hardware Description Language (HDL) to LANG
                           Valid values for LANG: {vhdl,verilog}
   -s, --cstyle=STYLE      Set the style of register bank in generated C headers
-                          Valid values for STYLE: {struct, defines}
+                          Valid values for STYLE: {struct, defines, extended}
   -H, --hstyle=STYLE      Set the style of register signals in generated VHDL/Verilog file
                           Valid values for STYLE: {signals, record}
   -K, --constco=FILE      Populate FILE with Verilog output (mainly constants)
@@ -111,7 +111,7 @@ function parse_args(arg)
 
 		elseif key == "s" then
 		   options.c_reg_style = value;
-		   if (options.c_reg_style ~= "struct" and options.c_reg_style ~= "defines") then
+		   if (options.c_reg_style ~= "struct" and options.c_reg_style ~= "defines" and options.c_reg_style ~= "extended") then
 		      die("Unknown C RegBank style: "..options.c_reg_style);
 		   end
 
