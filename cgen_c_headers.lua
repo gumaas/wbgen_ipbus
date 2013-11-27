@@ -121,7 +121,7 @@ function cgen_c_fileheader()
    emit("");
    emit("#ifndef __WBGEN2_MACROS_DEFINED__");
    emit("#define __WBGEN2_MACROS_DEFINED__");
-   emit("#define WBGEN2_GEN_MASK(offset, size) (((1<<(size))-1) << (offset))");
+   emit("#define WBGEN2_GEN_MASK(offset, size) (((1ULL<<(size))-1) << (offset))");
    emit("#define WBGEN2_GEN_WRITE(value, offset, size) (((value) & ((1<<(size))-1)) << (offset))");
    emit("#define WBGEN2_GEN_READ(reg, offset, size) (((reg) >> (offset)) & ((1<<(size))-1))");
    emit("#define WBGEN2_SIGN_EXTEND(value, bits) (((value) & (1<<bits) ? ~((1<<(bits))-1): 0 ) | (value))");
