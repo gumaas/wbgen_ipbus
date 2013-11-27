@@ -34,7 +34,7 @@ function cgen_c_field_define(field, reg, index)
       emit(string.format("%-45s %d", "#define "..prefix.."_INDEX", index));
       emit(string.format("%-45s %s", "#define "..prefix.."_PREFIX", "\""..field.c_prefix.."\""));
       emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..field.name.."\""));
-      emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..field.description.."\")"));
+      emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..field.description:gsub("\n.*", "").."\")"));
       emit(string.format("%-45s %s", "#define "..prefix.."_ACCESS", "WBGEN2_"..rw_table[field.access_bus]));
    end
    
@@ -211,7 +211,7 @@ function cgen_c_defines()
 			      if(options.c_reg_style == "extended")  then
 			         emit(string.format("%-45s %s", "#define "..prefix.."_PREFIX", "\""..reg.c_prefix.."\""));
 			         emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..reg.name.."\""));
-			         emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..reg.description.."\")"));
+			         emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..reg.description:gsub("\n.*", "").."\")"));
 			      end
 			      emit(string.format("%-45s %s","#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(reg.c_prefix),
 			      string.format("0x%08x", reg.base * DATA_BUS_WIDTH/8)));
@@ -237,7 +237,7 @@ function cgen_generate_c_header_code()
    emit("");
    emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_PREFIX", "\""..periph.c_prefix.."\""));
    emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_NAME", "\""..periph.name.."\""));
-   emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_DESC", "WBGEN2_DESC(\""..periph.description.."\")"));
+   emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_DESC", "WBGEN2_DESC(\""..periph.description:gsub("\n.*", "").."\")"));
 
    emit("\n#endif");
    cgen_write_current_snippet();
