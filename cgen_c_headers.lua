@@ -25,7 +25,10 @@ function cgen_c_field_define(field, reg, index)
    else
       prefix=string.upper(periph.c_prefix).."_"..string.upper	(reg.c_prefix).."_"..string.upper(field.c_prefix);	
    end
-   
+
+   if(field.nbfp == nil or field.nbfp >= field.size-1) then
+      field.nbfp=0;
+   end
    
    emit("");
    emit("/* definitions for field: "..field.name.." in reg: "..reg.name.." */");
@@ -36,6 +39,7 @@ function cgen_c_field_define(field, reg, index)
       emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..field.name.."\""));
       emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..field.description:gsub("\n.*", "").."\")"));
       emit(string.format("%-45s %s", "#define "..prefix.."_ACCESS", "WBGEN2_"..rw_table[field.access_bus]));
+      emit(string.format("%-45s %d", "#define "..prefix.."_NBFP", field.nbfp));
       if(field.type == BIT or field.type == MONOSTABLE)  then
         emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
         emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
