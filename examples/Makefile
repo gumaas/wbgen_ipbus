@@ -27,6 +27,7 @@ html: $(WBINPUT:.wb=.html)
 db: $(WBINPUT:.wb=.db)
 header: $(WBINPUT:.wb=.h)
 tex: $(WBINPUT:.wb=.tex)
+pkg: $(WBINPUT:.wb=_pkg.vhd)
 
 ## Outputs generation
 %.vhd: %.wb
@@ -43,7 +44,9 @@ tex: $(WBINPUT:.wb=.tex)
 
 %.tex: %.wb
 	wbgen2 --docformat=latex --docu=$@ $<
-
+	
+%_pkg.vhd: %.wb
+	wbgen2 --vo=$*.vhdl --vpo=$@ --hstyle=record $<
 
 ## Cleaning
 clean:
