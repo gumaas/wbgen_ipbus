@@ -1852,7 +1852,7 @@ return;
 else
 t=string.upper(periph.c_prefix).."_"..string.upper(a.c_prefix).."_"..string.upper(e.c_prefix);
 end
-if(e.nbfp==nil or e.nbfp>=e.size-1)then
+if(e.nbfp==nil or e.nbfp>=e.size)then
 e.nbfp=0;
 end
 emit("");

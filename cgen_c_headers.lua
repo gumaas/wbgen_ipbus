@@ -26,7 +26,7 @@ function cgen_c_field_define(field, reg, index)
       prefix=string.upper(periph.c_prefix).."_"..string.upper	(reg.c_prefix).."_"..string.upper(field.c_prefix);	
    end
 
-   if(field.nbfp == nil or field.nbfp >= field.size-1) then
+   if(field.nbfp == nil or field.nbfp > field.size) then
       field.nbfp=0;
    end
    
