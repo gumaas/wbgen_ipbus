@@ -354,25 +354,20 @@ end
 
 
 function cgen_new_snippet()
-	emit_code = "";
+        emit_code = "";
 end
-
 function emiti()
-	local i;
-	for i = 1,cur_indent do emit_code=emit_code.."  "; end
+        local i;
+        for i = 1,cur_indent do emit_code=emit_code.."  "; end
 end
-
 function emit(s)
-	local i;
-	
-	for i = 1,cur_indent do emit_code=emit_code.."  "; end
-	emit_code=emit_code..s.."\n";
+        local i;
+        for i = 1,cur_indent do emit_code=emit_code.."  "; end
+        emit_code=emit_code..s.."\n";
 end
-
 function emitx(s)
-	emit_code=emit_code..s;
+        emit_code=emit_code..s;
 end
-
 function cgen_get_snippet()
   return emit_code;
 end

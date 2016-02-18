@@ -2,10 +2,12 @@ peripheral {
 	name ="FIFO test";
 	prefix="fifotest";
 	hdl_entity="fifotest";
+	description="fifotest";
 	
 	fifo_reg {
 		size = 256;
 		direction = BUS_TO_CORE;
+		description="fifotest";
 		prefix = "fifo1";
 		name = "fifo1";
 		flags_bus = {FIFO_FULL, FIFO_EMPTY, FIFO_COUNT};
@@ -14,6 +16,7 @@ peripheral {
 		field {
 			name = "ts value R";
 			prefix = "ts_r";
+			description="fifotest";
 			type = SLV;
 			size = 28;
 		};
@@ -21,6 +24,7 @@ peripheral {
 		field {
 			name = "ts value F";
 			prefix = "ts_f";
+			description="fifotest";
 			type = SLV;
 			size = 4;
 		};
@@ -29,6 +33,7 @@ peripheral {
 		field {
 			name ="port id";
 			prefix = "pid";
+			description="fifotest";
 			type = SLV;
 			size = 5;
 			align= 16;
@@ -37,6 +42,7 @@ peripheral {
 		
 		field {
 			name = "frame id value";
+			description="fifotest";
 			prefix = "fid";
 			type = SLV;
 			size = 16;

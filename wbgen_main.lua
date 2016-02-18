@@ -195,11 +195,17 @@ if(options.output_hdl_file ~= nil) then
    end
 end
 
+
+
 if(options.output_c_header_file ~= nil) then
 	cgen_generate_init(options.output_c_header_file)
 	cgen_generate_c_header_code();
 	cgen_generate_done();
 end
+
+cgen_generate_init("test.py")
+cgen_generate_python_header_code();
+cgen_generate_done();
 
 if(options.output_vlog_constants_file ~= nil) then
 	cgen_gen_vlog_constants(options.output_vlog_constants_file);
