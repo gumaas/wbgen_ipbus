@@ -67,7 +67,8 @@ function parse_args(arg)
 	local long_opts = {
 	   help		= "h",
 	   version	= "v",
-	   co		= "C",
+       co       = "C",
+	   xo		= "X",
 	   docformat	= "f",
 	   doco		= "D",
 	   constco	= "K",
@@ -81,7 +82,7 @@ function parse_args(arg)
 	local optarg
 	local optind
 
-	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:", long_opts)
+	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:X:", long_opts)
 	for key,value in pairs (optarg) do
 		if key == "h" then
 			usage_complete()
@@ -92,7 +93,10 @@ function parse_args(arg)
 			os.exit(0)
 
 		elseif key == "C" then
-			options.output_c_header_file = value
+            options.output_c_header_file = value
+        
+        elseif key == "X" then
+			options.output_py_header_file = value
 
 		elseif key == "D" then
 			options.output_doc_file = value
@@ -203,9 +207,11 @@ if(options.output_c_header_file ~= nil) then
 	cgen_generate_done();
 end
 
-cgen_generate_init("test.py")
-cgen_generate_python_header_code();
-cgen_generate_done();
+if(options.output_py_header_file ~= nil) then
+    cgen_generate_init(options.output_py_header_file)
+    cgen_generate_python_header_code();
+    cgen_generate_done();
+end
 
 if(options.output_vlog_constants_file ~= nil) then
 	cgen_gen_vlog_constants(options.output_vlog_constants_file);

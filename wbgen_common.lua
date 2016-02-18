@@ -3,7 +3,7 @@
 -- some constants --
 
 -- DEBUG MACROS
-VERBOSE_DEBUG = 1;
+VERBOSE_DEBUG = 0;
 
 -- bus properties
 DATA_BUS_WIDTH = 32;
