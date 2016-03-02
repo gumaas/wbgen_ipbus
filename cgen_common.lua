@@ -358,11 +358,11 @@ function cgen_new_snippet()
 end
 function emiti()
         local i;
-        for i = 1,cur_indent do emit_code=emit_code.."  "; end
+        for i = 1,cur_indent do emit_code=emit_code.."    "; end
 end
 function emit(s)
         local i;
-        for i = 1,cur_indent do emit_code=emit_code.."  "; end
+        for i = 1,cur_indent do emit_code=emit_code.."    "; end
         emit_code=emit_code..s.."\n";
 end
 function emitx(s)
