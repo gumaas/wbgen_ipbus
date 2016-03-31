@@ -68,13 +68,14 @@ function parse_args(arg)
 	   help		= "h",
 	   version	= "v",
        co       = "C",
-	   xo		= "X",
+       xo       = "X",
+	   po		= "P",
 	   docformat	= "f",
 	   doco		= "D",
 	   constco	= "K",
 	   lang		= "l",
 	   vo		= "V",
-     vpo          = "p",
+        vpo          = "p",
 	   cstyle       = "s",
      hstyle       = "H"
 	}
@@ -82,7 +83,7 @@ function parse_args(arg)
 	local optarg
 	local optind
 
-	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:X:", long_opts)
+	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:X:P:", long_opts)
 	for key,value in pairs (optarg) do
 		if key == "h" then
 			usage_complete()
@@ -96,7 +97,10 @@ function parse_args(arg)
             options.output_c_header_file = value
         
         elseif key == "X" then
-			options.output_py_header_file = value
+            options.output_ipbus_addr_file = value
+        
+        elseif key == "P" then
+			options.output_python_dictionary_file = value
 
 		elseif key == "D" then
 			options.output_doc_file = value
@@ -207,11 +211,18 @@ if(options.output_c_header_file ~= nil) then
 	cgen_generate_done();
 end
 
-if(options.output_py_header_file ~= nil) then
-    cgen_generate_init(options.output_py_header_file)
-    cgen_generate_python_header_code();
+if(options.output_ipbus_addr_file ~= nil) then
+    cgen_generate_init(options.output_ipbus_addr_file)
+    cgen_generate_ipbus_addr_code();
     cgen_generate_done();
 end
+
+if(options.output_python_dictionary_file ~= nil) then
+    cgen_generate_init(options.output_python_dictionary_file)
+    cgen_generate_python_dictionary_code();
+    cgen_generate_done();
+end
+
 
 if(options.output_vlog_constants_file ~= nil) then
 	cgen_gen_vlog_constants(options.output_vlog_constants_file);

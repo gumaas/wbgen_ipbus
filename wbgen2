@@ -1,8 +1,8 @@
 #!/usr/bin/env lua
 package.preload['alt_getopt']=(function(...)
-local i,s,u,o,a=type,pairs,ipairs,io,os
+local n,h,u,o,a=type,pairs,ipairs,io,os
 module("alt_getopt")
-local function r(t)
+local function i(t)
 local e=1
 local e=#t
 local e={}
@@ -11,9 +11,9 @@ e[t]=#a
 end
 return e
 end
-local function d(t,e)
-o.stderr:write(t)
-a.exit(e)
+local function d(e,t)
+o.stderr:write(e)
+a.exit(t)
 end
 local function a(e)
 d("Unknown option `-"..
@@ -23,7 +23,7 @@ local function l(t,e)
 if not t[e]then
 a(e)
 end
-while i(t[e])=="string"do
+while n(t[e])=="string"do
 e=t[e]
 if not t[e]then
 a(e)
@@ -31,13 +31,13 @@ end
 end
 return e
 end
-function get_ordered_opts(n,i,a)
+function get_ordered_opts(n,r,a)
 local t=1
 local e=1
 local o={}
-local h={}
-local i=r(i)
-for e,t in s(a)do
+local s={}
+local i=i(r)
+for e,t in h(a)do
 i[e]=t
 end
 while t<=#n do
@@ -48,49 +48,49 @@ break
 elseif a=="-"then
 break
 elseif a:sub(1,2)=="--"then
-local s=a:find("=",1,true)
-if s then
-local t=a:sub(3,s-1)
+local h=a:find("=",1,true)
+if h then
+local t=a:sub(3,h-1)
 t=l(i,t)
 if i[t]==0 then
 d("Bad usage of option `"..a.."'\n",1)
 end
-h[e]=a:sub(s+1)
+s[e]=a:sub(h+1)
 o[e]=t
 else
-local s=a:sub(3)
-s=l(i,s)
-if i[s]==0 then
-o[e]=s
+local h=a:sub(3)
+h=l(i,h)
+if i[h]==0 then
+o[e]=h
 else
 if t==#n then
 d("Missed value for option `"..a.."'\n",1)
 end
-h[e]=n[t+1]
-o[e]=s
+s[e]=n[t+1]
+o[e]=h
 t=t+1
 end
 end
 e=e+1
 elseif a:sub(1,1)=="-"then
-local s
+local h
 for r=2,a:len()do
-local s=l(i,a:sub(r,r))
-if i[s]==0 then
-o[e]=s
+local h=l(i,a:sub(r,r))
+if i[h]==0 then
+o[e]=h
 e=e+1
 elseif a:len()==r then
 if t==#n then
-d("Missed value for option `-"..s.."'\n",1)
+d("Missed value for option `-"..h.."'\n",1)
 end
-h[e]=n[t+1]
-o[e]=s
+s[e]=n[t+1]
+o[e]=h
 t=t+1
 e=e+1
 break
 else
-h[e]=a:sub(r+1)
-o[e]=s
+s[e]=a:sub(r+1)
+o[e]=h
 e=e+1
 break
 end
@@ -100,16 +100,16 @@ break
 end
 t=t+1
 end
-return o,t,h
+return o,t,s
 end
-function get_opts(a,t,o)
+function get_opts(t,o,a)
 local e={}
-local t,i,o=get_ordered_opts(a,t,o)
-for t,a in u(t)do
-if o[t]then
-e[a]=o[t]
+local a,i,t=get_ordered_opts(t,o,a)
+for a,o in u(a)do
+if t[a]then
+e[o]=t[a]
 else
-e[a]=1
+e[o]=1
 end
 end
 return e,i
@@ -176,22 +176,22 @@ die(t.." expected.");
 end
 return e;
 end
-function range2bits(e)
-local t=e[1];
-local a=e[2];
-local e;
-if(math.abs(t)>math.abs(a))then
-e=math.abs(t);
+function range2bits(t)
+local e=t[1];
+local a=t[2];
+local t;
+if(math.abs(e)>math.abs(a))then
+t=math.abs(e);
 else
-e=math.abs(a);
+t=math.abs(a);
 end
-local e=math.ceil(math.log(e)/math.log(2));
-if(t<0)then
-e=e+1;
+local t=math.ceil(math.log(t)/math.log(2));
+if(e<0)then
+t=t+1;
 end
-return e;
+return t;
 end
-function calc_size(e,t)
+function calc_size(e,a)
 if(e.type==MONOSTABLE or e.type==BIT)then
 e.size=1;
 elseif(e.type==SLV or e.type==PASS_THROUGH)then
@@ -212,16 +212,16 @@ end
 elseif(e.type==ENUM)then
 die("ENUM-type fields are not yet supported. Sorry :(");
 end
-t.total_size=t.total_size+e.size;
+a.total_size=a.total_size+e.size;
 end
-function foreach_reg(t,a,e)
+function foreach_reg(a,t,e)
 if(e==nil)then
 e=periph;
 end
 for o,e in ipairs(e)do
 if(type(e)=='table')then
-if(e.__type~=nil and(match(e.__type,t)))then
-a(e);
+if(e.__type~=nil and(match(e.__type,a)))then
+t(e);
 end
 end
 end
@@ -285,15 +285,15 @@ function die(e)
 print("Error: "..e);
 os.exit(-1);
 end
-function match(e,t)
+function match(t,e)
 local a,a;
-for a,t in pairs(t)do
-if(e==t)then return true;end
+for a,e in pairs(e)do
+if(t==e)then return true;end
 end
 return false;
 end
-function inset(t,e)
-for a,e in ipairs(e)do if(t==e)then return true;end end
+function inset(e,t)
+for a,t in ipairs(t)do if(e==t)then return true;end end
 return false;
 end
 function csel(a,t,e)
@@ -418,11 +418,11 @@ end);
 address_bus_width=o+a;
 address_bus_select_bits=a;
 end
-function find_max(e,t)
-local a=0;
+function find_max(e,a)
+local t=0;
 local o,o;
-for o,e in pairs(e)do if(type(e)=='table'and e[t]~=nil and e[t]>a)then a=e[t];end end
-return a;
+for o,e in pairs(e)do if(type(e)=='table'and e[a]~=nil and e[a]>t)then t=e[a];end end
+return t;
 end
 function table_join(t,e)
 local a,a;
@@ -470,44 +470,44 @@ end
 return e;
 end
 function wbgen_count_subblocks()
-local t=0;
 local o=0;
-local e=0;
 local a=0;
-foreach_reg({TYPE_RAM},function(e)t=t+1;end);
-foreach_reg({TYPE_REG},function(t)e=e+1;end);
-foreach_reg({TYPE_FIFO},function(e)o=o+1;end);
-foreach_reg({TYPE_IRQ},function(e)a=a+1;end);
-periph.ramcount=t;
-periph.fifocount=o;
-periph.regcount=e;
-periph.irqcount=a;
-if(t+o+e+a==0)then
+local t=0;
+local e=0;
+foreach_reg({TYPE_RAM},function(e)o=o+1;end);
+foreach_reg({TYPE_REG},function(e)t=t+1;end);
+foreach_reg({TYPE_FIFO},function(e)a=a+1;end);
+foreach_reg({TYPE_IRQ},function(t)e=e+1;end);
+periph.ramcount=o;
+periph.fifocount=a;
+periph.regcount=t;
+periph.irqcount=e;
+if(o+a+t+e==0)then
 die("Can't generate an empty peripheral. Define some regs, RAMs, FIFOs or IRQs, please...");
 end
 end
 function deepcopy(i)
-local o={}
-local function t(e)
+local a={}
+local function o(e)
 if type(e)~="table"then
 return e
-elseif o[e]then
-return o[e]
+elseif a[e]then
+return a[e]
 end
-local a={}
-o[e]=a
-for o,e in pairs(e)do
-a[t(o)]=t(e)
+local t={}
+a[e]=t
+for a,e in pairs(e)do
+t[o(a)]=o(e)
 end
-return setmetatable(a,getmetatable(e))
+return setmetatable(t,getmetatable(e))
 end
-return t(i)
+return o(i)
 end
-function va(a,t)
+function va(t,a)
 local e={};
 e.t="assign";
-e.dst=a;
-e.src=t;
+e.dst=t;
+e.src=a;
 return e;
 end
 function vi(a,o,t)
@@ -518,11 +518,11 @@ e.h=o;
 e.l=t;
 return e;
 end
-function vinstance(o,a,t)
+function vinstance(a,o,t)
 local e={};
 e.t="instance";
-e.name=o;
-e.component=a;
+e.name=a;
+e.component=o;
 e.maps=t;
 return e;
 end
@@ -547,19 +547,19 @@ e.slist=t;
 e.code=a;
 return e;
 end
-function vsyncprocess(t,o,a)
+function vsyncprocess(o,a,t)
 local e={};
 e.t="syncprocess";
-e.clk=t;
-e.rst=o;
-e.code=a;
+e.clk=o;
+e.rst=a;
+e.code=t;
 return e;
 end
-function vreset(a,t)
+function vreset(t,a)
 local e={};
 e.t="reset";
-e.level=a;
-e.code=t;
+e.level=t;
+e.code=a;
 return e;
 end
 function vposedge(t)
@@ -568,11 +568,11 @@ e.t="posedge";
 e.code=t;
 return e;
 end
-function vif(a,o,t)
+function vif(o,a,t)
 local e={};
 e.t="if";
-e.cond={a};
-e.code=o;
+e.cond={o};
+e.code=a;
 e.code_else=t;
 return e;
 end
@@ -590,11 +590,11 @@ e.a=t;
 e.b=a;
 return e;
 end
-function vand(a,t)
+function vand(t,a)
 local e={};
 e.t="and";
-e.a=a;
-e.b=t;
+e.a=t;
+e.b=a;
 return e;
 end
 function vor(t,a)
@@ -610,18 +610,18 @@ e.t="not";
 e.a=t;
 return e;
 end
-function vswitch(a,t)
+function vswitch(t,a)
 local e={};
 e.t="switch";
-e.a=a;
-e.code=t;
-return e;
-end
-function vcase(t,a)
-local e={};
-e.t="case";
 e.a=t;
 e.code=a;
+return e;
+end
+function vcase(a,t)
+local e={};
+e.t="case";
+e.a=a;
+e.code=t;
 return e;
 end
 function vcasedefault(t)
@@ -636,11 +636,11 @@ e.t="comment";
 e.str=t;
 return e;
 end
-function vsub(a,t)
+function vsub(t,a)
 local e={};
 e.t="sub";
-e.a=a;
-e.b=t;
+e.a=t;
+e.b=a;
 return e;
 end
 function vothers(t)
@@ -659,21 +659,21 @@ local e={}
 e.t="undefined";
 return e;
 end
-function signal(a,o,t,i)
+function signal(i,a,o,t)
 local e={}
-e.comment=i;
-e.type=a;
-e.range=o;
-e.name=t;
+e.comment=t;
+e.type=i;
+e.range=a;
+e.name=o;
 return e;
 end
 VPORT_WB=1;
 VPORT_REG=2;
-function port(a,n,o,i,s,t)
+function port(n,s,o,i,a,t)
 local e={}
-e.comment=s;
-e.type=a;
-e.range=n;
+e.comment=a;
+e.type=n;
+e.range=s;
 e.name=i;
 e.dir=o;
 if(t~=nil)then
@@ -727,17 +727,17 @@ table_join(e,tree_2_table("ports"));
 return e;
 end
 function cgen_build_optional_list()
-local o={}
 local a={}
+local o={}
 local e=1
 for i,t in pairs(tree_2_table("optional"))do
-if o[t]==nil then
-o[t]=1
-a[e]=t
+if a[t]==nil then
+a[t]=1
+o[e]=t
 e=e+1
 end
 end
-return a
+return o
 end
 function cgen_find_sigport(e)
 for a,t in pairs(g_portlist)do if(e==t.name)then return t;end end
@@ -921,17 +921,17 @@ emit("return tmp;");
 emit("end function;");
 emit("end package body;");
 end
-function cgen_vhdl_port_struct(a)
-emit("type t_"..periph.hdl_prefix.."_"..a.."_registers is record");
+function cgen_vhdl_port_struct(o)
+emit("type t_"..periph.hdl_prefix.."_"..o.."_registers is record");
 indent_right();
-local t={};
+local a={};
 for e=1,table.getn(g_portlist)do
 local e=g_portlist[e];
-if(e.is_reg_port==true and e.dir==a)then
-table.insert(t,e);
+if(e.is_reg_port==true and e.dir==o)then
+table.insert(a,e);
 end
 end
-for t,e in ipairs(t)do
+for t,e in ipairs(a)do
 local t=csel(e.type==SLV and e.range==1,"std_logic",fieldtype_2_vhdl[e.type]);
 local t=string.format("%-40s : %s",strip_periph_prefix(e.name),t);
 if(e.range>1)then
@@ -943,17 +943,17 @@ end
 emit("end record;");
 indent_left();
 emit("");
-emit("constant c_"..periph.hdl_prefix.."_"..a.."_registers_init_value: t_"..periph.hdl_prefix.."_"..a.."_registers := (");
+emit("constant c_"..periph.hdl_prefix.."_"..o.."_registers_init_value: t_"..periph.hdl_prefix.."_"..o.."_registers := (");
 indent_right();
-for a=1,table.getn(t)do
-local e=t[a];
+for t=1,table.getn(a)do
+local e=a[t];
 line=strip_periph_prefix(e.name).." => ";
 if(e.range>1)then
 line=line.."(others => '0')"
 else
 line=line.."'0'"
 end
-if(a~=table.getn(t))then
+if(t~=table.getn(a))then
 line=line..",";
 end
 emit(line);
@@ -1098,22 +1098,22 @@ emit("end process;");
 emit("");
 emit("");
 end
-function cgen_vhdl_combprocess(e)
-local t=true;
+function cgen_vhdl_combprocess(t)
+local e=true;
 emiti();
 emitx("process (");
-for a,e in pairs(e.slist)do
-if(t)then
-t=false;
+for a,t in pairs(t.slist)do
+if(e)then
+e=false;
 else
 emitx(", ");
 end
-emitx(e);
+emitx(t);
 end
 emit(")");
 emit("begin");
 indent_right();
-recurse(e.code);
+recurse(t.code);
 indent_left();
 emit("end process;");
 emit("");
@@ -1217,16 +1217,16 @@ else
 die("unsupported assignment: "..t.name.." "..e.name);end
 else die("unsupported assignment: "..t.name.." "..e.name);end
 end
-function cgen_vhdl_assign(t)
-local e=node_typesize(t.dst);
-local t=node_typesize(t.src);
-if(t.type==EXPRESSION)then
+function cgen_vhdl_assign(e)
+local t=node_typesize(e.dst);
+local e=node_typesize(e.src);
+if(e.type==EXPRESSION)then
 emiti();
-emitx(gen_subrange(e).." <= ");
-recurse({t.code});
+emitx(gen_subrange(t).." <= ");
+recurse({e.code});
 emitx(";\n");
 else
-emit(gen_subrange(e).." <= "..gen_vhdl_typecvt(e,t)..";");
+emit(gen_subrange(t).." <= "..gen_vhdl_typecvt(t,e)..";");
 end
 end
 function cgen_vhdl_if(e)
@@ -1256,13 +1256,13 @@ emitx(") generate\n");
 indent_right();recurse(e.code);indent_left();
 emit("end generate "..gname..";");
 end
-function cgen_vhdl_not(t)
-local e=node_typesize(t.a);
+function cgen_vhdl_not(e)
+local t=node_typesize(e.a);
 emitx("not ");
-if(e.type==EXPRESSION)then
-emitx("(");recurse({t.a});emitx(")");
+if(t.type==EXPRESSION)then
+emitx("(");recurse({e.a});emitx(")");
 else
-emitx(gen_subrange(e));
+emitx(gen_subrange(t));
 end
 end
 function cgen_vhdl_binary_op(e)
@@ -1315,25 +1315,25 @@ end
 emit("end case;");
 end
 function cgen_vhdl_instance(t)
-local o=0;
 local a=0;
+local o=0;
 local e;
 emit(t.name.." : "..t.component);
 for t,e in pairs(t.maps)do
 if(e.t=="genmap")then
-a=a+1;
-elseif(e.t=="portmap")then
 o=o+1;
+elseif(e.t=="portmap")then
+a=a+1;
 end
 end
-if(a>0)then
+if(o>0)then
 indent_right();
 emit("generic map (");
 indent_right();
 e=1;
-for o,t in pairs(t.maps)do
+for a,t in pairs(t.maps)do
 if(t.t=="genmap")then
-emit(string.format("%-20s => %s",t.to,t.from)..csel(e==a,"",","));
+emit(string.format("%-20s => %s",t.to,t.from)..csel(e==o,"",","));
 e=e+1;
 end
 end
@@ -1341,15 +1341,15 @@ indent_left();
 emit(")");
 indent_left();
 end
-if(o>0)then
+if(a>0)then
 indent_right();
 emit("port map (");
 indent_right();
 e=1;
-for a,t in pairs(t.maps)do
+for o,t in pairs(t.maps)do
 if(t.t=="portmap")then
-local a=node_typesize(t.from);
-emit(string.format("%-20s => %s",t.to,gen_subrange(a))..csel(e==o,"",","));
+local o=node_typesize(t.from);
+emit(string.format("%-20s => %s",t.to,gen_subrange(o))..csel(e==a,"",","));
 e=e+1;
 end
 end
@@ -1482,7 +1482,7 @@ function cgen_verilog_ending()
 indent_left();
 emit("endmodule");
 end
-function cgen_generate_verilog_code(i)
+function cgen_generate_verilog_code(n)
 local a=false;
 function find_code(e,t)
 for a,e in ipairs(e)do if((e.t~=nil)and(e.t==t))then return e;end end
@@ -1687,29 +1687,29 @@ end
 end
 emit("endcase");
 end
-function cgen_verilog_instance(t)
-local a=0;
+function cgen_verilog_instance(a)
 local o=0;
+local i=0;
 local e;
-emitx(t.component.." ");
-for t,e in pairs(t.maps)do
+emitx(a.component.." ");
+for t,e in pairs(a.maps)do
 if(e.t=="genmap")then
-o=o+1;
+i=i+1;
 elseif(e.t=="portmap")then
-a=a+1;
+o=o+1;
 end
 end
-if(o>0)then
+if(i>0)then
 indent_right();
 emit("# (");
 indent_right();
 e=1;
-for t,a in pairs(t.maps)do
+for t,a in pairs(a.maps)do
 if(a.t=="genmap")then
 local t=a.from;
 if(t=="true")then t=1;
 elseif(t=="false")then t=0;end
-emit(string.format(".%-20s(%s)",a.to,t)..csel(e==o,"",","));
+emit(string.format(".%-20s(%s)",a.to,t)..csel(e==i,"",","));
 e=e+1;
 end
 end
@@ -1717,15 +1717,15 @@ indent_left();
 emit(")");
 indent_left();
 end
-if(a>0)then
+if(o>0)then
 indent_right();
-emit(t.name.." ( ");
+emit(a.name.." ( ");
 indent_right();
 e=1;
-for o,t in pairs(t.maps)do
+for a,t in pairs(a.maps)do
 if(t.t=="portmap")then
-local o=node_typesize(t.from);
-emit(string.format(".%-20s(%s)",t.to,gen_subrange(o))..csel(e==a,"",","));
+local a=node_typesize(t.from);
+emit(string.format(".%-20s(%s)",t.to,gen_subrange(a))..csel(e==o,"",","));
 e=e+1;
 end
 end
@@ -1738,23 +1738,23 @@ end
 function cgen_verilog_openpin(e)
 emitx("");
 end
-function cgen_verilog_combprocess(t)
-local e=true;
+function cgen_verilog_combprocess(e)
+local t=true;
 emiti();
 emitx("always @(");
 a=true;
-for a,t in pairs(t.slist)do
-if(e)then
-e=false;
+for a,e in pairs(e.slist)do
+if(t)then
+t=false;
 else
 emitx(" or ");
 end
-emitx(t);
+emitx(e);
 end
 emit(")");
 emit("begin");
 indent_right();
-recurse(t.code);
+recurse(e.code);
 indent_left();
 a=false;
 emit("end");
@@ -1792,17 +1792,17 @@ end
 end
 cgen_new_snippet();
 cgen_verilog_header();
-local a=cgen_get_snippet();
-cgen_new_snippet();
-recurse(i);
-cgen_verilog_ending();
 local t=cgen_get_snippet();
+cgen_new_snippet();
+recurse(n);
+cgen_verilog_ending();
+local a=cgen_get_snippet();
 cgen_new_snippet();
 cgen_verilog_module();
 local e=cgen_get_snippet();
-cgen_write_snippet(a);
-cgen_write_snippet(e);
 cgen_write_snippet(t);
+cgen_write_snippet(e);
+cgen_write_snippet(a);
 end
 function cgen_c_field_define(e,a)
 local t;
@@ -1944,7 +1944,7 @@ emit("#endif");
 cgen_write_current_snippet();
 end
 function DEC_HEX(e)
-return"\"0x"..DEC_HEX2(e).."\""
+return"0x"..DEC_HEX2(e)..""
 end
 function DEC_HEX2(e)
 local i,n,t,o,a=16,"0123456789ABCDEF","",0
@@ -1960,21 +1960,21 @@ return t
 end
 function access_translate(e)
 if e==1 then
-return"\"r\""
+return"r"
 elseif e==2 then
-return"\"rw\""
+return"rw"
 elseif e==4 then
-return"\"w\""
+return"w"
 end
 end
-function cgen_python_field_define(e,a)
-local t;
+function cgen_mypython_field_define(e,t)
+local a;
 if(e.c_prefix==nil)then
 return;
 else
-t=string.upper(periph.c_prefix).."_"..string.upper(a.c_prefix).."_"..string.upper(e.c_prefix);
+a=string.upper(periph.c_prefix).."_"..string.upper(t.c_prefix).."_"..string.upper(e.c_prefix);
 end
-emit("<node id=\""..e.c_prefix.."\" mask="..DEC_HEX(2^(e.size+e.offset)-2^e.offset).." permission="..access_translate(e.access_bus).."/>");
+emit("\'"..t.c_prefix.."."..e.c_prefix.."\' : [ "..DEC_HEX(t.base)..", "..DEC_HEX(2^(e.size+e.offset)-2^e.offset)..", "..t[1].access_bus.."], ");
 end
 function cgen_python_ramdefs(e)
 local t=string.upper(periph.c_prefix).."_"..string.upper(e.c_prefix);
@@ -1988,18 +1988,11 @@ foreach_reg({TYPE_REG},function(e)
 dbg("DOCREG: ",e.name,e.num_fields);
 if(e.num_fields~=nil and e.num_fields>0)then
 emit("");
-if(e.num_fields==1)then
-if(e.doc_is_fiforeg==true)then
-emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base).." permission="..access_translate(e[1].access_bus).." mode=\"port\"/>");
-else
-emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base).." permission="..access_translate(e[1].access_bus).."/>");
-end
-else
-emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base)..">");
+emit("\'"..e.c_prefix.."\' : [ "..DEC_HEX(e.base)..", 0xffff, "..e[1].access_bus.."],");
+if(e.num_fields~=1)then
 indent_right()
-foreach_subfield(e,function(t,e)cgen_python_field_define(t,e)end);
+foreach_subfield(e,function(t,e)cgen_mypython_field_define(t,e)end);
 indent_left()
-emit("</node>");
 end
 end
 end
@@ -2010,17 +2003,15 @@ end
 );
 end
 function cgen_python_fileheader()
-emit("<!--");
-emit("  Register definitions for slave core: "..periph.name);
-emit("");
-emit("  * File           : "..options.output_c_header_file);
-emit("  * Author         : auto-generated by wbgen2 from "..input_wb_file);
-emit("  * Created        : "..os.date());
-emit("");
-emit("    THIS FILE WAS GENERATED BY wbgen2 FROM SOURCE FILE "..input_wb_file);
-emit("    DO NOT HAND-EDIT UNLESS IT'S ABSOLUTELY NECESSARY!");
-emit("");
-emit("-->");
+emit("#  Register definitions for slave core: "..periph.name);
+emit("#");
+emit("#  * File           : "..options.output_c_header_file);
+emit("#  * Author         : auto-generated by wbgen2 from "..input_wb_file);
+emit("#  * Created        : "..os.date());
+emit("#");
+emit("#    THIS FILE WAS GENERATED BY wbgen2 FROM SOURCE FILE "..input_wb_file);
+emit("#    DO NOT HAND-EDIT UNLESS IT'S ABSOLUTELY NECESSARY!");
+emit("#");
 emit("");
 end
 function cgen_python_struct()
@@ -2070,12 +2061,150 @@ emit(string.format("/* [0x%x]: REG "..e.name.." */",e.base*DATA_BUS_WIDTH/8));
 emit("#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(e.c_prefix).." "..string.format("0x%08x",e.base*DATA_BUS_WIDTH/8));
 end);
 end
-function cgen_generate_python_header_code()
+function cgen_generate_python_dictionary_code()
 cgen_new_snippet();
 cgen_python_fileheader();
-emit("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<node>)")
+emit("addr = {")
 indent_right();
 cgen_python_field_masks();
+emit("\'\':[0,0]")
+indent_left();
+emit("}")
+cgen_write_current_snippet();
+end
+function DEC_HEX(e)
+return"\"0x"..DEC_HEX2(e).."\""
+end
+function DEC_HEX2(e)
+local o,n,t,i,a=16,"0123456789ABCDEF","",0
+if e==0 then
+return"0"
+end
+while e>0 do
+i=i+1
+e,a=math.floor(e/o),math.mod(e,o)+1
+t=string.sub(n,a,a)..t
+end
+return t
+end
+function access_translate(e)
+if e==1 then
+return"\"r\""
+elseif e==2 then
+return"\"rw\""
+elseif e==4 then
+return"\"w\""
+end
+end
+function cgen_ipbus_field_define(e,t)
+local a;
+if(e.c_prefix==nil)then
+return;
+else
+a=string.upper(periph.c_prefix).."_"..string.upper(t.c_prefix).."_"..string.upper(e.c_prefix);
+end
+emit("<node id=\""..e.c_prefix.."\" mask="..DEC_HEX(2^(e.size+e.offset)-2^e.offset).." permission="..access_translate(e.access_bus).."/>");
+end
+function cgen_ipbus_ramdefs(e)
+local t=string.upper(periph.c_prefix).."_"..string.upper(e.c_prefix);
+emit("/* definitions for RAM: "..e.name.." */");
+emit(string.format("#define "..t.."_BASE 0x%08x %-50s",e.base*DATA_BUS_WIDTH/8,"/* base address */"));
+emit(string.format("#define "..t.."_BYTES 0x%08x %-50s",e.size*e.width/8,"/* size in bytes */"));
+emit(string.format("#define "..t.."_WORDS 0x%08x %-50s",e.size,"/* size in "..e.width.."-bit words, 32-bit aligned */"));
+end
+function cgen_ipbus_field_masks()
+foreach_reg({TYPE_REG},function(e)
+dbg("DOCREG: ",e.name,e.num_fields);
+if(e.num_fields~=nil and e.num_fields>0)then
+emit("");
+if(e.num_fields==1)then
+if(e.doc_is_fiforeg==true)then
+emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base).." permission="..access_translate(e[1].access_bus).." mode=\"port\"/>");
+else
+emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base).." permission="..access_translate(e[1].access_bus).."/>");
+end
+else
+emit("<node id=\""..e.c_prefix.."\" address="..DEC_HEX(e.base)..">");
+indent_right()
+foreach_subfield(e,function(t,e)cgen_ipbus_field_define(t,e)end);
+indent_left()
+emit("</node>");
+end
+end
+end
+);
+foreach_reg({TYPE_RAM},function(e)
+cgen_ipbus_ramdefs(e);
+end
+);
+end
+function cgen_ipbus_fileheader()
+emit("<!--");
+emit("  Register definitions for slave core: "..periph.name);
+emit("");
+emit("  * File           : "..options.output_c_header_file);
+emit("  * Author         : auto-generated by wbgen2 from "..input_wb_file);
+emit("  * Created        : "..os.date());
+emit("");
+emit("    THIS FILE WAS GENERATED BY wbgen2 FROM SOURCE FILE "..input_wb_file);
+emit("    DO NOT HAND-EDIT UNLESS IT'S ABSOLUTELY NECESSARY!");
+emit("");
+emit("-->");
+emit("");
+end
+function cgen_ipbus_struct()
+local e=0;
+local a=0;
+function pad_struct(t)
+if(e<t)then
+emit("/* padding to: "..t.." words */");
+emit("uint32_t __padding_"..a.."["..(t-e).."];");
+a=a+1;
+e=t;
+end
+end
+emit("");
+emit("PACKED struct "..string.upper(periph.c_prefix).."_WB {");
+indent_right();
+foreach_reg({TYPE_REG},function(t)
+pad_struct(t.base);
+emit(string.format("/* [0x%x]: REG "..t.name.." */",t.base*DATA_BUS_WIDTH/8));
+emit("uint32_t "..string.upper(t.c_prefix)..";");
+e=e+1;
+end);
+foreach_reg({TYPE_RAM},function(e)
+local t=e.select_bits*
+math.pow(2,address_bus_width-address_bus_select_bits);
+pad_struct(t);
+emiti();
+emitx(string.format("/* [0x%x - 0x%x]: RAM "..e.name..", "..e.size.." "..e.width.."-bit words, "..DATA_BUS_WIDTH.."-bit aligned, "..csel(e.byte_select,"byte","word").."-addressable",t*DATA_BUS_WIDTH/8,(t+math.pow(2,e.wrap_bits)*e.size)*(DATA_BUS_WIDTH/8)-1));
+if(e.wrap_bits>0)then
+emitx(", mirroring: "..math.pow(2,e.wrap_bits).." times */\n");
+else
+emitx(" */\n");
+end
+if(e.byte_select)then
+emit("uint8_t "..string.upper(e.c_prefix).." ["..(e.size*(DATA_BUS_WIDTH/8)*math.pow(2,e.wrap_bits)).."];");
+else
+emit("uint32_t "..string.upper(e.c_prefix).." ["..(e.size*math.pow(2,e.wrap_bits)).."];");
+end
+end);
+indent_left();
+emit("};");
+emit("");
+end
+function cgen_ipbus_defines()
+foreach_reg({TYPE_REG},function(e)
+emit(string.format("/* [0x%x]: REG "..e.name.." */",e.base*DATA_BUS_WIDTH/8));
+emit("#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(e.c_prefix).." "..string.format("0x%08x",e.base*DATA_BUS_WIDTH/8));
+end);
+end
+function cgen_generate_ipbus_addr_code()
+cgen_new_snippet();
+cgen_ipbus_fileheader();
+emit("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<node>)")
+indent_right();
+cgen_ipbus_field_masks();
 indent_left();
 emit("</node>)")
 cgen_write_current_snippet();
@@ -2116,21 +2245,21 @@ end
 end
 return e;
 end
-function htable_tdstyle(e,t,a)
-tbl.data[e][t].style=a;
+function htable_tdstyle(e,a,t)
+tbl.data[e][a].style=t;
 end
 function htable_trstyle(t,a,e)
 tbl.data[t].style=e;
 end
-function htable_frame(a,t,o,e)
+function htable_frame(o,t,a,e)
 if(e==nil)then
-a.data[t][o].extra='style="border: solid 1px black;"';
+o.data[t][a].extra='style="border: solid 1px black;"';
 else
-a.data[t][o].extra='style="border-left: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;';
-a.data[t][e].extra='style="border-right: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;';
-if(e>o+1)then
-for e=o+1,e-1 do
-a.data[t][e].extra='border-top: solid 1px black; border-bottom: solid 1px black;';
+o.data[t][a].extra='style="border-left: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;';
+o.data[t][e].extra='style="border-right: solid 1px black; border-top: solid 1px black; border-bottom: solid 1px black;';
+if(e>a+1)then
+for e=a+1,e-1 do
+o.data[t][e].extra='border-top: solid 1px black; border-bottom: solid 1px black;';
 end
 end
 end
@@ -2168,26 +2297,26 @@ emit("</tr>");
 end
 emit("</table>");
 end
-function has_any_ports(t)
-local e=false;
-if(t.ports~=nil)then return true;end
-foreach_subfield(t,function(t)if(t.ports~=nil)then e=true;end end);
-return e;
+function has_any_ports(e)
+local t=false;
+if(e.ports~=nil)then return true;end
+foreach_subfield(e,function(e)if(e.ports~=nil)then t=true;end end);
+return t;
 end
-function htable_add_row(e,a)
-if(a>e.rows)then
-for t=e.rows+1,a do
+function htable_add_row(e,t)
+if(t>e.rows)then
+for t=e.rows+1,t do
 e.data[t]={};
 for a=1,e.cols do
 e.data[t][a]={};
 e.data[t][a].text="";
 end
 end
-e.rows=a;
+e.rows=t;
 end
 end
-function hlink(e,t)
-return'<A href="'..e..'">'..t..'</a>';
+function hlink(t,e)
+return'<A href="'..t..'">'..e..'</a>';
 end
 function hitem(e)
 return'<li>'..e..'</li>';
@@ -2255,23 +2384,23 @@ end
 end);
 cgen_doc_symbol(t);
 end
-function cgen_doc_mem_symbol(t)
-local a={};
-for e,t in pairs(t.ports)do
-local e=t;
-if(string.find(t.name,"_i")~=nil)then
+function cgen_doc_mem_symbol(a)
+local t={};
+for e,a in pairs(a.ports)do
+local e=a;
+if(string.find(a.name,"_i")~=nil)then
 e.is_wb=true;
 else
 e.is_wb=false;
 end
-table.insert(a,e);
+table.insert(t,e);
 end
-if(t.clock~=nil)then
-local e=port(BIT,0,"in",t.clock);
+if(a.clock~=nil)then
+local e=port(BIT,0,"in",a.clock);
 e.is_wb=true;
-table.insert(a,e);
+table.insert(t,e);
 end
-cgen_doc_symbol(a);
+cgen_doc_symbol(t);
 end
 function cgen_doc_symbol(o)
 local t=htable_new(3,5);
@@ -2366,19 +2495,19 @@ e[5].text=string.upper(t.c_prefix);
 i=not i;
 end
 end);
-foreach_reg({TYPE_RAM},function(e)
-if(e.full_hdl_prefix~=nil)then
+foreach_reg({TYPE_RAM},function(t)
+if(t.full_hdl_prefix~=nil)then
 htable_add_row(o,a);
-local t=o.data[a];a=a+1;
-t.style=csel(i,"tr_odd","tr_even");
-t[1].style="td_code";
-t[1].text=string.format("0x%x - 0x%x",e.base,e.base+math.pow(2,e.wrap_bits)*e.size-1);
-t[2].text="MEM";
-t[3].text=hlink("#"..string.upper(e.c_prefix),e.name);
-t[4].style="td_code";
-t[4].text=e.full_hdl_prefix;
-t[5].style="td_code";
-t[5].text=string.upper(e.c_prefix);
+local e=o.data[a];a=a+1;
+e.style=csel(i,"tr_odd","tr_even");
+e[1].style="td_code";
+e[1].text=string.format("0x%x - 0x%x",t.base,t.base+math.pow(2,t.wrap_bits)*t.size-1);
+e[2].text="MEM";
+e[3].text=hlink("#"..string.upper(t.c_prefix),t.name);
+e[4].style="td_code";
+e[4].text=t.full_hdl_prefix;
+e[5].style="td_code";
+e[5].text=string.upper(t.c_prefix);
 i=not i;
 end
 end);
@@ -2526,26 +2655,26 @@ emit("<p>"..string.gsub(t.description,"\n","<br>").."</p>");
 end
 end
 cur_irq_no=1;
-function cgen_doc_irq(t)
-emit(hanchor(string.upper(t.c_prefix),""));
-emit(hsection(5,cur_irq_no,t.name));
+function cgen_doc_irq(e)
+emit(hanchor(string.upper(e.c_prefix),""));
+emit(hsection(5,cur_irq_no,e.name));
 cur_irq_no=cur_irq_no+1;
-local e=htable_new(3,2);
-e.data[1][1].text="<b>HW prefix: </b>";
-e.data[2][1].text="<b>C prefix: </b>";
-e.data[3][1].text="<b>Trigger: </b>";
-e.data[1][2].text=string.lower(periph.hdl_prefix.."_"..t.hdl_prefix);
-e.data[2][2].text=string.upper(t.c_prefix);
+local t=htable_new(3,2);
+t.data[1][1].text="<b>HW prefix: </b>";
+t.data[2][1].text="<b>C prefix: </b>";
+t.data[3][1].text="<b>Trigger: </b>";
+t.data[1][2].text=string.lower(periph.hdl_prefix.."_"..e.hdl_prefix);
+t.data[2][2].text=string.upper(e.c_prefix);
 local a={
 [EDGE_RISING]="rising edge";
 [EDGE_FALLING]="falling edge";
 [LEVEL_0]="low level";
 [LEVEL_1]="high level";
 };
-e.data[3][2].text=a[t.trigger];
-htable_emit(e);
-if(t.description~=nil)then
-emit("<p>"..string.gsub(t.description,"\n","<br>").."</p>");
+t.data[3][2].text=a[e.trigger];
+htable_emit(t);
+if(e.description~=nil)then
+emit("<p>"..string.gsub(e.description,"\n","<br>").."</p>");
 end
 end
 function cgen_generate_html_documentation()
@@ -2554,19 +2683,19 @@ cgen_new_snippet();
 emit(hsection(3,0,"Register description"));
 foreach_reg({TYPE_REG},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_reg(e);end end);
 local o=cgen_get_snippet();
-local t="";
+local a="";
 if(periph.ramcount>0)then
 emit(hsection(4,0,"Memory blocks"));
 cgen_new_snippet();
 foreach_reg({TYPE_RAM},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_ram(e);end end);
-t=cgen_get_snippet();
+a=cgen_get_snippet();
 end
-local a="";
+local t="";
 if(periph.irqcount>0)then
 cgen_new_snippet();
 emit(hsection(5,0,"Interrupts"));
 foreach_reg({TYPE_IRQ},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_irq(e);end end);
-a=cgen_get_snippet();
+t=cgen_get_snippet();
 end
 cgen_new_snippet();
 cgen_doc_memmap();
@@ -2576,8 +2705,8 @@ cgen_doc_header_and_toc();
 emit(e);
 emit(i);
 emit(o);
-emit(t);
 emit(a);
+emit(t);
 emit('</BODY>');
 emit('</HTML>');
 cgen_write_current_snippet();
@@ -2995,19 +3124,19 @@ cgen_new_snippet();
 emit("\\subsubsection{Register description}");
 foreach_reg({TYPE_REG},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_lx_reg(e);end end);
 local o=cgen_get_snippet();
-local a="";
+local t="";
 if(periph.ramcount>0)then
 emit("\\subsubsection{Memory blocks}");
 cgen_new_snippet();
 foreach_reg({TYPE_RAM},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_lx_ram(e);end end);
-a=cgen_get_snippet();
+t=cgen_get_snippet();
 end
-local t="";
+local a="";
 if(periph.irqcount>0)then
 cgen_new_snippet();
 emit("\\subsubsection{Interrupts}");
 foreach_reg({TYPE_IRQ},function(e)if(e.no_docu==nil or e.no_docu==false)then cgen_doc_lx_irq(e);end end);
-t=cgen_get_snippet();
+a=cgen_get_snippet();
 end
 cgen_new_snippet();
 cgen_doc_lx_memmap();
@@ -3016,8 +3145,8 @@ cgen_new_snippet();
 cgen_doc_lx_header_and_toc();
 emit(e);
 emit(o);
-emit(a);
 emit(t);
+emit(a);
 cgen_write_current_snippet();
 end
 function gen_hdl_field_prefix(a,e)
@@ -3093,163 +3222,163 @@ t.ackgen_code_pre={va(e.."_int",e.."_int_delay");
 va(e.."_int_delay",0);};
 end
 end
-function gen_hdl_code_bit(e,a)
-local t=gen_hdl_field_prefix(e,a);
-e.prefix=t;
-if(e.clock==nil)then
-if(e.access==ACC_RW_RO)then
-e.ports={port(BIT,0,"out",t.."_o","Port for BIT field: '"..e.name.."' in reg: '"..a.name.."'",VPORT_REG)};
-e.signals={signal(BIT,0,t.."_int")};
-e.acklen=1;
-e.write_code={
-va(t.."_int",vi("wrdata_reg",e.offset))};
-e.read_code={va(vi("rddata_reg",e.offset),t.."_int")};
-e.reset_code_main={va(t.."_int",csel(e.reset_value==nil,0,e.reset_value))};
-e.extra_code={va(t.."_o",t.."_int")};
-elseif(e.access==ACC_RO_WO)then
-e.ports={port(BIT,0,"in",t.."_i","Port for BIT field: '"..e.name.."' in reg: '"..a.name.."'",VPORT_REG)};
-e.signals={};
-e.acklen=1;
-e.write_code={};
-e.read_code={va(vi("rddata_reg",e.offset),t.."_i")};
-e.reset_code_main={};
-e.extra_code={};
-elseif(e.access==ACC_WO_RO)then
-die("WO-RO type unsupported yet ("..e.name..")");
-elseif(e.access==ACC_RW_RW)then
-if(e.load==LOAD_EXT)then
-e.ports={port(BIT,0,"out",t.."_o","Ports for BIT field: '"..e.name.."' in reg: '"..a.name.."'",VPORT_REG),
-port(BIT,0,"in",t.."_i",nil,VPORT_REG),
-port(BIT,0,"out",t.."_load_o",nil,VPORT_REG)};
-e.acklen=1;
-e.read_code={va(vi("rddata_reg",e.offset),t.."_i")};
-e.write_code={
-va(t.."_load_o",1)};
-e.extra_code={va(t.."_o",vi("wrdata_reg",e.offset))};
-e.ackgen_code_pre={va(t.."_load_o",0)};
-e.ackgen_code={va(t.."_load_o",0)};
-e.reset_code_main={va(t.."_load_o",0)};
+function gen_hdl_code_bit(t,a)
+local e=gen_hdl_field_prefix(t,a);
+t.prefix=e;
+if(t.clock==nil)then
+if(t.access==ACC_RW_RO)then
+t.ports={port(BIT,0,"out",e.."_o","Port for BIT field: '"..t.name.."' in reg: '"..a.name.."'",VPORT_REG)};
+t.signals={signal(BIT,0,e.."_int")};
+t.acklen=1;
+t.write_code={
+va(e.."_int",vi("wrdata_reg",t.offset))};
+t.read_code={va(vi("rddata_reg",t.offset),e.."_int")};
+t.reset_code_main={va(e.."_int",csel(t.reset_value==nil,0,t.reset_value))};
+t.extra_code={va(e.."_o",e.."_int")};
+elseif(t.access==ACC_RO_WO)then
+t.ports={port(BIT,0,"in",e.."_i","Port for BIT field: '"..t.name.."' in reg: '"..a.name.."'",VPORT_REG)};
+t.signals={};
+t.acklen=1;
+t.write_code={};
+t.read_code={va(vi("rddata_reg",t.offset),e.."_i")};
+t.reset_code_main={};
+t.extra_code={};
+elseif(t.access==ACC_WO_RO)then
+die("WO-RO type unsupported yet ("..t.name..")");
+elseif(t.access==ACC_RW_RW)then
+if(t.load==LOAD_EXT)then
+t.ports={port(BIT,0,"out",e.."_o","Ports for BIT field: '"..t.name.."' in reg: '"..a.name.."'",VPORT_REG),
+port(BIT,0,"in",e.."_i",nil,VPORT_REG),
+port(BIT,0,"out",e.."_load_o",nil,VPORT_REG)};
+t.acklen=1;
+t.read_code={va(vi("rddata_reg",t.offset),e.."_i")};
+t.write_code={
+va(e.."_load_o",1)};
+t.extra_code={va(e.."_o",vi("wrdata_reg",t.offset))};
+t.ackgen_code_pre={va(e.."_load_o",0)};
+t.ackgen_code={va(e.."_load_o",0)};
+t.reset_code_main={va(e.."_load_o",0)};
 else
-die("internal RW/RW register storage unsupported yet ("..e.name..")");
+die("internal RW/RW register storage unsupported yet ("..t.name..")");
 end
 end
 else
-if(e.access==ACC_RW_RO)then
-e.ports={port(BIT,0,"out",t.."_o","Port for asynchronous (clock: "..e.clock..") BIT field: '"..e.name.."' in reg: '"..a.name.."'",VPORT_REG)};
-e.signals={signal(BIT,0,t.."_int"),
-signal(BIT,0,t.."_sync0"),
-signal(BIT,0,t.."_sync1")};
-e.acklen=4;
-e.write_code={va(t.."_int",vi("wrdata_reg",e.offset))};
-e.read_code={va(vi("rddata_reg",e.offset),t.."_int")};
-e.reset_code_main={va(t.."_int",csel(e.reset_value==nil,0,e.reset_value))};
-e.extra_code={vcomment("synchronizer chain for field : "..e.name.." (type RW/RO, clk_sys_i <-> "..e.clock..")");
-vsyncprocess(e.clock,"rst_n_i",{
+if(t.access==ACC_RW_RO)then
+t.ports={port(BIT,0,"out",e.."_o","Port for asynchronous (clock: "..t.clock..") BIT field: '"..t.name.."' in reg: '"..a.name.."'",VPORT_REG)};
+t.signals={signal(BIT,0,e.."_int"),
+signal(BIT,0,e.."_sync0"),
+signal(BIT,0,e.."_sync1")};
+t.acklen=4;
+t.write_code={va(e.."_int",vi("wrdata_reg",t.offset))};
+t.read_code={va(vi("rddata_reg",t.offset),e.."_int")};
+t.reset_code_main={va(e.."_int",csel(t.reset_value==nil,0,t.reset_value))};
+t.extra_code={vcomment("synchronizer chain for field : "..t.name.." (type RW/RO, clk_sys_i <-> "..t.clock..")");
+vsyncprocess(t.clock,"rst_n_i",{
 vreset(0,{
-va(t.."_o",csel(e.reset_value==nil,0,e.reset_value));
-va(t.."_sync0",csel(e.reset_value==nil,0,e.reset_value));
-va(t.."_sync1",csel(e.reset_value==nil,0,e.reset_value));
+va(e.."_o",csel(t.reset_value==nil,0,t.reset_value));
+va(e.."_sync0",csel(t.reset_value==nil,0,t.reset_value));
+va(e.."_sync1",csel(t.reset_value==nil,0,t.reset_value));
 });
 vposedge({
-va(t.."_sync0",t.."_int");
-va(t.."_sync1",t.."_sync0");
-va(t.."_o",t.."_sync1");
+va(e.."_sync0",e.."_int");
+va(e.."_sync1",e.."_sync0");
+va(e.."_o",e.."_sync1");
 });
 });
 };
-elseif(e.access==ACC_RO_WO)then
-e.ports={port(BIT,0,"in",t.."_i","Port for asynchronous (clock: "..e.clock..") BIT field: '"..e.name.."' in reg: '"..a.name.."'",VPORT_REG)};
-e.signals={signal(BIT,0,t.."_sync0"),
-signal(BIT,0,t.."_sync1")};
-e.acklen=1;
-e.write_code={};
-e.read_code={va(vi("rddata_reg",e.offset),t.."_sync1")};
-e.reset_code_main={};
-e.extra_code={vcomment("synchronizer chain for field : "..e.name.." (type RO/WO, "..e.clock.." -> clk_sys_i)");
-vsyncprocess(e.clock,"rst_n_i",{
+elseif(t.access==ACC_RO_WO)then
+t.ports={port(BIT,0,"in",e.."_i","Port for asynchronous (clock: "..t.clock..") BIT field: '"..t.name.."' in reg: '"..a.name.."'",VPORT_REG)};
+t.signals={signal(BIT,0,e.."_sync0"),
+signal(BIT,0,e.."_sync1")};
+t.acklen=1;
+t.write_code={};
+t.read_code={va(vi("rddata_reg",t.offset),e.."_sync1")};
+t.reset_code_main={};
+t.extra_code={vcomment("synchronizer chain for field : "..t.name.." (type RO/WO, "..t.clock.." -> clk_sys_i)");
+vsyncprocess(t.clock,"rst_n_i",{
 vreset(0,{
-va(t.."_sync0",0);
-va(t.."_sync1",0);
+va(e.."_sync0",0);
+va(e.."_sync1",0);
 });
 vposedge({
-va(t.."_sync0",t.."_i");
-va(t.."_sync1",t.."_sync0");
+va(e.."_sync0",e.."_i");
+va(e.."_sync1",e.."_sync0");
 });
 });
 };
-elseif(e.access==ACC_RW_RW)then
-if(e.load~=LOAD_EXT)then
+elseif(t.access==ACC_RW_RW)then
+if(t.load~=LOAD_EXT)then
 die("Only external load is supported for RW/RW bit fields");
 end
-local a="Ports for asynchronous (clock: "..e.clock..") RW/RW BIT field: '"..e.name.."' in reg: '"..a.name.."'";
-e.ports={port(BIT,0,"out",t.."_o",a,VPORT_REG),
-port(BIT,0,"in",t.."_i",nil,VPORT_REG),
-port(BIT,0,"out",t.."_load_o",nil,VPORT_REG)};
-e.signals={signal(BIT,0,t.."_int_read"),
-signal(BIT,0,t.."_int_write"),
-signal(BIT,0,t.."_lw"),
-signal(BIT,0,t.."_lw_delay"),
-signal(BIT,0,t.."_lw_read_in_progress"),
-signal(BIT,0,t.."_lw_s0"),
-signal(BIT,0,t.."_lw_s1"),
-signal(BIT,0,t.."_lw_s2"),
-signal(BIT,0,t.."_rwsel")};
-e.acklen=6;
-e.write_code={
-va(t.."_int_write",vi("wrdata_reg",e.offset));
-va(t.."_lw",1);
-va(t.."_lw_delay",1);
-va(t.."_lw_read_in_progress",0);
-va(t.."_rwsel",1);};
-e.read_code={vif(vequal("wb_we_i",0),{
-va(vi("rddata_reg",e.offset),vundefined());
-va(t.."_lw",1);
-va(t.."_lw_delay",1);
-va(t.."_lw_read_in_progress",1);
-va(t.."_rwsel",0);});};
-e.reset_code_main={va(t.."_lw",0);
-va(t.."_lw_delay",0);
-va(t.."_lw_read_in_progress",0);
-va(t.."_rwsel",0);
-va(t.."_int_write",0);
+local a="Ports for asynchronous (clock: "..t.clock..") RW/RW BIT field: '"..t.name.."' in reg: '"..a.name.."'";
+t.ports={port(BIT,0,"out",e.."_o",a,VPORT_REG),
+port(BIT,0,"in",e.."_i",nil,VPORT_REG),
+port(BIT,0,"out",e.."_load_o",nil,VPORT_REG)};
+t.signals={signal(BIT,0,e.."_int_read"),
+signal(BIT,0,e.."_int_write"),
+signal(BIT,0,e.."_lw"),
+signal(BIT,0,e.."_lw_delay"),
+signal(BIT,0,e.."_lw_read_in_progress"),
+signal(BIT,0,e.."_lw_s0"),
+signal(BIT,0,e.."_lw_s1"),
+signal(BIT,0,e.."_lw_s2"),
+signal(BIT,0,e.."_rwsel")};
+t.acklen=6;
+t.write_code={
+va(e.."_int_write",vi("wrdata_reg",t.offset));
+va(e.."_lw",1);
+va(e.."_lw_delay",1);
+va(e.."_lw_read_in_progress",0);
+va(e.."_rwsel",1);};
+t.read_code={vif(vequal("wb_we_i",0),{
+va(vi("rddata_reg",t.offset),vundefined());
+va(e.."_lw",1);
+va(e.."_lw_delay",1);
+va(e.."_lw_read_in_progress",1);
+va(e.."_rwsel",0);});};
+t.reset_code_main={va(e.."_lw",0);
+va(e.."_lw_delay",0);
+va(e.."_lw_read_in_progress",0);
+va(e.."_rwsel",0);
+va(e.."_int_write",0);
 };
-e.ackgen_code_pre={va(t.."_lw",t.."_lw_delay");
-va(t.."_lw_delay",0);
-vif(vand(vequal(vi("ack_sreg",1),1),vequal(t.."_lw_read_in_progress",1)),{
-va(vi("rddata_reg",e.offset),t.."_int_read");
-va(t.."_lw_read_in_progress",0);
+t.ackgen_code_pre={va(e.."_lw",e.."_lw_delay");
+va(e.."_lw_delay",0);
+vif(vand(vequal(vi("ack_sreg",1),1),vequal(e.."_lw_read_in_progress",1)),{
+va(vi("rddata_reg",t.offset),e.."_int_read");
+va(e.."_lw_read_in_progress",0);
 });
 };
-e.extra_code={vcomment("asynchronous BIT register : "..e.name.." (type RW/WO, "..e.clock.." <-> clk_sys_i)");
-vsyncprocess(e.clock,"rst_n_i",{
+t.extra_code={vcomment("asynchronous BIT register : "..t.name.." (type RW/WO, "..t.clock.." <-> clk_sys_i)");
+vsyncprocess(t.clock,"rst_n_i",{
 vreset(0,{
-va(t.."_lw_s0",0);
-va(t.."_lw_s1",0);
-va(t.."_lw_s2",0);
-va(t.."_int_read",0);
-va(t.."_load_o",0);
-va(t.."_o",0);
+va(e.."_lw_s0",0);
+va(e.."_lw_s1",0);
+va(e.."_lw_s2",0);
+va(e.."_int_read",0);
+va(e.."_load_o",0);
+va(e.."_o",0);
 });
 vposedge({
-va(t.."_lw_s0",t.."_lw");
-va(t.."_lw_s1",t.."_lw_s0");
-va(t.."_lw_s2",t.."_lw_s1");
-vif(vand(vequal(t.."_lw_s2",0),vequal(t.."_lw_s1",1)),{
-vif(vequal(t.."_rwsel",1),{
-va(t.."_o",t.."_int_write");
-va(t.."_load_o",1);
+va(e.."_lw_s0",e.."_lw");
+va(e.."_lw_s1",e.."_lw_s0");
+va(e.."_lw_s2",e.."_lw_s1");
+vif(vand(vequal(e.."_lw_s2",0),vequal(e.."_lw_s1",1)),{
+vif(vequal(e.."_rwsel",1),{
+va(e.."_o",e.."_int_write");
+va(e.."_load_o",1);
 },{
-va(t.."_load_o",0);
-va(t.."_int_read",t.."_i");
+va(e.."_load_o",0);
+va(e.."_int_read",e.."_i");
 });
 },{
-va(t.."_load_o",0);
+va(e.."_load_o",0);
 });
 });
 });
 };
-elseif(e.access==ACC_WO_RO)then
-die("WO-RO type unsupported yet ("..e.name..")");
+elseif(t.access==ACC_WO_RO)then
+die("WO-RO type unsupported yet ("..t.name..")");
 end
 end
 end
@@ -3509,27 +3638,27 @@ e.ports={};
 e.acklen=1;
 e.read_code={va(vir("rddata_reg",e),e.value);};
 end
-function fill_unused_bits(i,e)
+function fill_unused_bits(o,e)
 local a={};
 local t={};
-local o=true;
+local i=true;
 foreach_subfield(e,function(e,t)
 if(e.type==SLV or e.type==SIGNED or e.type==UNSIGNED or e.type==CONSTANT)then
 for e=e.offset,(e.offset+e.size-1)do a[e]=1;end
 elseif(e.type==BIT or e.type==MONOSTABLE)then
 a[e.offset]=1;
 end
-if(e.access_bus~=WRITE_ONLY)then o=false;end
+if(e.access_bus~=WRITE_ONLY)then i=false;end
 end);
-if(o)then
+if(i)then
 for e=0,DATA_BUS_WIDTH-1 do
-table_join(t,{va(vi(i,e),vundefined());});
+table_join(t,{va(vi(o,e),vundefined());});
 end
 return t;
 end
 for e=0,DATA_BUS_WIDTH-1 do
 if(a[e]==nil)then
-table_join(t,{va(vi(i,e),vundefined());});
+table_join(t,{va(vi(o,e),vundefined());});
 end
 end
 return t;
@@ -3652,8 +3781,8 @@ end
 function wbgen_generate_eic()
 if(periph.irqcount==0)then return;end
 local t=0;
-local o={};
-local a={["__type"]=TYPE_REG;
+local i={};
+local o={["__type"]=TYPE_REG;
 ["__blockindex"]=1e6;
 ["align"]=8;
 ["name"]="Interrupt disable register";
@@ -3669,7 +3798,7 @@ signal(BIT,0,"eic_idr_write_int");};
 ["extra_code"]={va(vi("eic_idr_int",periph.irqcount-1,0),vi("wrdata_reg",periph.irqcount-1,0));};
 ["no_std_regbank"]=true;
 };
-local s={["__type"]=TYPE_REG;
+local a={["__type"]=TYPE_REG;
 ["__blockindex"]=1000001;
 ["align"]=1;
 ["name"]="Interrupt enable register";
@@ -3685,7 +3814,7 @@ signal(BIT,0,"eic_ier_write_int");};
 ["extra_code"]={va(vi("eic_ier_int",periph.irqcount-1,0),vi("wrdata_reg",periph.irqcount-1,0));};
 ["no_std_regbank"]=true;
 };
-local i={["__type"]=TYPE_REG;
+local s={["__type"]=TYPE_REG;
 ["__blockindex"]=1000002;
 ["align"]=1;
 ["name"]="Interrupt status register";
@@ -3719,9 +3848,9 @@ local n={["__type"]=TYPE_REG;
 foreach_reg({TYPE_IRQ},function(e)
 e.index=t;
 t=t+1;
-table.insert(o,{["index"]=e.index;["trigger"]=e.trigger;});
+table.insert(i,{["index"]=e.index;["trigger"]=e.trigger;});
 fix_prefix(e);
-local h={
+local r={
 ["__blockindex"]=e.index;
 ["__type"]=TYPE_FIELD;
 ["type"]=BIT;
@@ -3732,7 +3861,7 @@ local h={
 ["access_bus"]=READ_WRITE;
 ["access_dev"]=READ_WRITE;
 };
-local o={
+local t={
 ["__blockindex"]=e.index;
 ["__type"]=TYPE_FIELD;
 ["type"]=BIT;
@@ -3743,7 +3872,7 @@ local o={
 ["access_bus"]=WRITE_ONLY;
 ["access_dev"]=READ_ONLY;
 };
-local t={
+local i={
 ["__blockindex"]=e.index;
 ["__type"]=TYPE_FIELD;
 ["type"]=BIT;
@@ -3754,7 +3883,7 @@ local t={
 ["access_bus"]=WRITE_ONLY;
 ["access_dev"]=READ_ONLY;
 };
-local r={
+local h={
 ["__blockindex"]=e.index;
 ["__type"]=TYPE_FIELD;
 ["type"]=BIT;
@@ -3774,18 +3903,18 @@ end
 if(e.mask_line==true)then
 table_join(e.ports,{port(BIT,0,"out",e.full_prefix.."_mask_o");});
 end
+table.insert(o,i);
+table.insert(s,r);
+table.insert(n,h);
 table.insert(a,t);
-table.insert(i,h);
-table.insert(n,r);
-table.insert(s,o);
 end);
 add_global_signals({
 signal(SLV,periph.irqcount,"irq_inputs_vector_int");
 });
+table.insert(periph,o);
 table.insert(periph,a);
-table.insert(periph,s);
 table.insert(periph,n);
-table.insert(periph,i);
+table.insert(periph,s);
 local e={vgm("g_num_interrupts",periph.irqcount);
 vpm("clk_i","clk_sys_i");
 vpm("rst_n_i","rst_n_i");
@@ -3801,12 +3930,12 @@ vpm("reg_isr_i","eic_isr_clear_int");
 vpm("reg_isr_wr_stb_i","eic_isr_write_int");
 vpm("wb_irq_o","wb_int_o");
 };
-local a;
-for o,t in ipairs(o)do
-table_join(e,{vgm(string.format("g_irq%02x_mode",t.index),t.trigger)});
-a=o;
+local t;
+for o,a in ipairs(i)do
+table_join(e,{vgm(string.format("g_irq%02x_mode",a.index),a.trigger)});
+t=o;
 end
-for t=a,31 do
+for t=t,31 do
 table_join(e,{vgm(string.format("g_irq%02x_mode",t),0)});
 end
 local t={vinstance("eic_irq_controller_inst","wbgen2_eic",e);};
@@ -3982,7 +4111,7 @@ local s={
 ["hdl_prefix"]=e.hdl_prefix.."_CSR";
 ["no_std_regbank"]=true;
 };
-function gen_fifo_csr_field(a,i,t,r,h,o,d,n)
+function gen_fifo_csr_field(a,i,t,d,h,o,r,n)
 if(e.flags_bus==nil)then
 return;
 end
@@ -3990,12 +4119,12 @@ if inset(a,e.flags_bus)then
 local t={
 ["__type"]=TYPE_FIELD;
 ["name"]=t;
-["description"]=r;
+["description"]=d;
 ["access_bus"]=READ_ONLY;
 ["access_dev"]=WRITE_ONLY;
 ["type"]=o;
 ["size"]=h;
-["offset"]=d;
+["offset"]=r;
 ["c_prefix"]=i;
 ["hdl_prefix"]=i;
 ["signals"]={};
@@ -4191,42 +4320,42 @@ gen_pipelined_wb_signals(e);
 foreach_reg(ALL_REG_TYPES,function(e)
 gen_abstract_code(e);
 end);
-local n={};
-local s={};
+local o={};
 local i={};
+local n={};
 foreach_field(function(e,t)
-table_join(n,e.reset_code_main);
+table_join(o,e.reset_code_main);
 end);
 foreach_reg(ALL_REG_TYPES,function(e)
-table_join(n,e.reset_code_main);
+table_join(o,e.reset_code_main);
 end);
 foreach_reg({TYPE_REG},function(e)
 foreach_subfield(e,function(e,t)
-table_join(s,e.ackgen_code);
-table_join(i,e.ackgen_code_pre);
+table_join(i,e.ackgen_code);
+table_join(n,e.ackgen_code_pre);
 end);
-table_join(s,e.ackgen_code);
-table_join(i,e.ackgen_code_pre);
+table_join(i,e.ackgen_code);
+table_join(n,e.ackgen_code_pre);
 end);
 local e={};
 foreach_reg({TYPE_REG},function(t)
-local i=find_max(t,"acklen");
-local o={};
+local n=find_max(t,"acklen");
 local a={};
-foreach_subfield(t,function(e,t)table_join(a,e.write_code);end);
-foreach_subfield(t,function(e,t)table_join(o,e.read_code);end);
-local n=fill_unused_bits("rddata_reg",t);
-table_join(a,t.write_code);
-table_join(o,t.read_code);
+local o={};
+foreach_subfield(t,function(e,t)table_join(o,e.write_code);end);
+foreach_subfield(t,function(e,t)table_join(a,e.read_code);end);
+local i=fill_unused_bits("rddata_reg",t);
+table_join(o,t.write_code);
+table_join(a,t.read_code);
 local a={
 vif(vequal("wb_we_i",1),{
-a,
-});
 o,
-n
+});
+a,
+i
 };
 if(not(t.dont_emit_ack_code==true))then
-table_join(a,{va(vi("ack_sreg",math.max(i-1,0)),1);});
+table_join(a,{va(vi("ack_sreg",math.max(n-1,0)),1);});
 table_join(a,{va("ack_in_progress",1);});
 end
 if(regbank_address_bits>0)then
@@ -4247,13 +4376,13 @@ local t={};
 if(periph.fifocount+periph.regcount>0)then
 t={vcase(0,e);};
 end
-foreach_reg({TYPE_RAM},function(e)
-local a=csel(options.register_data_output,1,0);
-table_join(t,{vcase(e.select_bits,{
+foreach_reg({TYPE_RAM},function(a)
+local e=csel(options.register_data_output,1,0);
+table_join(t,{vcase(a.select_bits,{
 vif(vequal("rd_int",1),{
 va(vi("ack_sreg",0),1);
 },{
-va(vi("ack_sreg",a),1);
+va(vi("ack_sreg",e),1);
 });
 va("ack_in_progress",1);
 });});
@@ -4283,14 +4412,14 @@ vreset(0,{
 va("ack_sreg",0);
 va("ack_in_progress",0);
 va("rddata_reg",0);
-n
+o
 });
 vposedge({
 vcomment("advance the ACK generator shift register");
 va(vi("ack_sreg",MAX_ACK_LENGTH-2,0),vi("ack_sreg",MAX_ACK_LENGTH-1,1));
 va(vi("ack_sreg",MAX_ACK_LENGTH-1),0);
 vif(vequal("ack_in_progress",1),{
-vif(vequal(vi("ack_sreg",0),1),{s;va("ack_in_progress",0);},i);
+vif(vequal(vi("ack_sreg",0),1),{i;va("ack_in_progress",0);},n);
 },{
 e
 });
@@ -4299,20 +4428,20 @@ e
 };
 if(periph.ramcount>0)then
 if(not options.register_data_output)then
-local t={"rddata_reg","rwaddr_reg"};
-local a={};
-local o={vswitch(vi("rwaddr_reg",address_bus_width-1,address_bus_width-address_bus_select_bits),a);};
-local o={vcomment("Data output multiplexer process");vcombprocess(t,o);};
+local a={"rddata_reg","rwaddr_reg"};
+local t={};
+local o={vswitch(vi("rwaddr_reg",address_bus_width-1,address_bus_width-address_bus_select_bits),t);};
+local o={vcomment("Data output multiplexer process");vcombprocess(a,o);};
 foreach_reg({TYPE_RAM},function(e)
-table.insert(t,e.full_prefix.."_rddata_int");
-local t={va(vi("wb_dat_o",e.width-1,0),e.full_prefix.."_rddata_int");};
+table.insert(a,e.full_prefix.."_rddata_int");
+local a={va(vi("wb_dat_o",e.width-1,0),e.full_prefix.."_rddata_int");};
 if(e.width<DATA_BUS_WIDTH)then
-table_join(t,{va(vi("wb_dat_o",DATA_BUS_WIDTH-1,e.width),0);});
+table_join(a,{va(vi("wb_dat_o",DATA_BUS_WIDTH-1,e.width),0);});
 end
-table_join(a,{vcase(e.select_bits,t);});
+table_join(t,{vcase(e.select_bits,a);});
 end);
-table.insert(t,"wb_adr_i");
-table_join(a,{vcasedefault(va("wb_dat_o","rddata_reg"));});
+table.insert(a,"wb_adr_i");
+table_join(t,{vcasedefault(va("wb_dat_o","rddata_reg"));});
 table_join(e,o);
 end
 local a={"wb_adr_i","rd_int","wr_int"};
@@ -4398,12 +4527,13 @@ function usage_complete()
 print(e)
 print(t)
 end
-function parse_args(o)
+function parse_args(a)
 local t={
 help="h",
 version="v",
 co="C",
 xo="X",
+po="P",
 docformat="f",
 doco="D",
 constco="K",
@@ -4414,8 +4544,8 @@ cstyle="s",
 hstyle="H"
 }
 local e
-local a
-e,a=alt_getopt.get_opts(o,"hvC:D:K:l:V:s:f:H:p:X:",t)
+local o
+e,o=alt_getopt.get_opts(a,"hvC:D:K:l:V:s:f:H:p:X:P:",t)
 for t,e in pairs(e)do
 if t=="h"then
 usage_complete()
@@ -4426,7 +4556,9 @@ os.exit(0)
 elseif t=="C"then
 options.output_c_header_file=e
 elseif t=="X"then
-options.output_py_header_file=e
+options.output_ipbus_addr_file=e
+elseif t=="P"then
+options.output_python_dictionary_file=e
 elseif t=="D"then
 options.output_doc_file=e
 elseif t=="K"then
@@ -4454,11 +4586,11 @@ end
 options.hdl_reg_style=e
 end
 end
-if(o[a]==nil)then
+if(a[o]==nil)then
 usage()
 os.exit(0)
 end
-input_wb_file=o[a];
+input_wb_file=a[o];
 end
 parse_args(arg);
 dofile(input_wb_file);
@@ -4498,9 +4630,14 @@ cgen_generate_init(options.output_c_header_file)
 cgen_generate_c_header_code();
 cgen_generate_done();
 end
-if(options.output_py_header_file~=nil)then
-cgen_generate_init(options.output_py_header_file)
-cgen_generate_python_header_code();
+if(options.output_ipbus_addr_file~=nil)then
+cgen_generate_init(options.output_ipbus_addr_file)
+cgen_generate_ipbus_addr_code();
+cgen_generate_done();
+end
+if(options.output_python_dictionary_file~=nil)then
+cgen_generate_init(options.output_python_dictionary_file)
+cgen_generate_python_dictionary_code();
 cgen_generate_done();
 end
 if(options.output_vlog_constants_file~=nil)then
