@@ -1943,7 +1943,7 @@ end
 emit("#endif");
 cgen_write_current_snippet();
 end
-function DEC_HEX(e)
+function DEC_HEX_NS(e)
 return"0x"..DEC_HEX2(e)..""
 end
 function DEC_HEX2(e)
@@ -1958,7 +1958,7 @@ t=string.sub(n,a,a)..t
 end
 return t
 end
-function access_translate(e)
+function access_translate_ns(e)
 if e==1 then
 return"r"
 elseif e==2 then
@@ -1974,7 +1974,7 @@ return;
 else
 a=string.upper(periph.c_prefix).."_"..string.upper(t.c_prefix).."_"..string.upper(e.c_prefix);
 end
-emit("\'"..t.c_prefix.."."..e.c_prefix.."\' : [ "..DEC_HEX(t.base)..", "..DEC_HEX(2^(e.size+e.offset)-2^e.offset)..", "..t[1].access_bus.."], ");
+emit("\'"..t.c_prefix.."."..e.c_prefix.."\' : [ "..DEC_HEX_NS(t.base)..", "..DEC_HEX_NS(2^(e.size+e.offset)-2^e.offset)..", "..access_translate(t[1].access_bus).."], ");
 end
 function cgen_python_ramdefs(e)
 local t=string.upper(periph.c_prefix).."_"..string.upper(e.c_prefix);
@@ -1988,7 +1988,7 @@ foreach_reg({TYPE_REG},function(e)
 dbg("DOCREG: ",e.name,e.num_fields);
 if(e.num_fields~=nil and e.num_fields>0)then
 emit("");
-emit("\'"..e.c_prefix.."\' : [ "..DEC_HEX(e.base)..", 0xffff, "..e[1].access_bus.."],");
+emit("\'"..e.c_prefix.."\' : [ "..DEC_HEX_NS(e.base)..", 0xffffffff, "..access_translate(e[1].access_bus).."],");
 if(e.num_fields~=1)then
 indent_right()
 foreach_subfield(e,function(t,e)cgen_mypython_field_define(t,e)end);

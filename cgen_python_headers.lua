@@ -18,7 +18,7 @@
 -- field1_value = FIELD1_R(regs_struct->reg);
 --
 
-function DEC_HEX(IN)
+function DEC_HEX_NS(IN)
     return "0x"..DEC_HEX2(IN) .. ""
 end
 
@@ -35,7 +35,7 @@ function DEC_HEX2(IN)
     return OUT
 end
 
-function access_translate( type )
+function access_translate_ns( type )
    if type == 1 then
       return "r"
    elseif type == 2 then
@@ -53,10 +53,10 @@ function cgen_mypython_field_define(field, reg)
    else
       prefix=string.upper(periph.c_prefix).."_"..string.upper	(reg.c_prefix).."_"..string.upper(field.c_prefix);	
    end
-               -- emit("\'"..reg.c_prefix.."\' : [ "..DEC_HEX(reg.base)..", 0xffff, "..reg[1].access_bus .."],");
+               -- emit("\'"..reg.c_prefix.."\' : [ "..DEC_HEX_NS(reg.base)..", 0xffff, "..reg[1].access_bus .."],");
 
-   emit("\'"..reg.c_prefix.."."..field.c_prefix.."\' : [ "..DEC_HEX(reg.base)..", "..DEC_HEX( 2^( field.size +field.offset) - 2^field.offset ) ..", "..reg[1].access_bus .. "], " );
-   -- emit("<node id=\""..field.c_prefix.."\" mask="..DEC_HEX( 2^( field.size +field.offset) - 2^field.offset ).." permission="..access_translate(field.access_bus).."/>");
+   emit("\'"..reg.c_prefix.."."..field.c_prefix.."\' : [ "..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset ) ..", "..access_translate(reg[1].access_bus).. "], " );
+   -- emit("<node id=\""..field.c_prefix.."\" mask="..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset ).." permission="..access_translate(field.access_bus).."/>");
 	
 end
 
@@ -82,7 +82,7 @@ function cgen_python_field_masks()
          dbg("DOCREG: ", reg.name, reg.num_fields);
          if(reg.num_fields ~= nil and reg.num_fields > 0) then
             emit("");
-            emit("\'"..reg.c_prefix.."\' : [ "..DEC_HEX(reg.base)..", 0xffff, "..reg[1].access_bus .."],");
+            emit("\'"..reg.c_prefix.."\' : [ "..DEC_HEX_NS(reg.base)..", 0xffffffff, "..access_translate(reg[1].access_bus).."],");
             if ( reg.num_fields ~= 1) then 
                indent_right()
                foreach_subfield(reg, function(field, reg) cgen_mypython_field_define(field, reg) end);
