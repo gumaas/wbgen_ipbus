@@ -3,7 +3,7 @@
 -- some constants --
 
 -- DEBUG MACROS
-VERBOSE_DEBUG = 1;
+VERBOSE_DEBUG = 0;
 
 -- bus properties
 DATA_BUS_WIDTH = 32;
@@ -202,7 +202,7 @@ function align(field, offset)
 		
 -- calculate the aligned offset    
 
-	print("Align  ", field.name, field.align, offset, newofs);
+	dbg("Align  ", field.name, field.align, offset, newofs);
 
   return newofs;
 end
