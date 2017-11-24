@@ -7,6 +7,7 @@ Output "wbgen2"
 
 Module "alt_getopt" "modules/alt_getopt.lua"
 
+Main "cgen_python_class.lua"
 Main "wbgen_common.lua"
 Main "cgen_common.lua"
 Main "cgen_vhdl.lua"

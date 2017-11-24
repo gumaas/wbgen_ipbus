@@ -50,6 +50,8 @@ local commands_string = [[options:
   -V, --vo=FILE           Write the slave's generated HDL code to FILE
   -p, --vpo=FILE          Generate a VHDL package for slave's generated VHDL
                           (necessary with --hstyle=record)
+  -P, --po                Generate Python dictionary address map       
+  -G, --pclass            Generate Python class
 
 wbgen2 (c) Tomasz Wlostowski/CERN BE-CO-HT 2010-2012]]
 
@@ -76,6 +78,8 @@ function parse_args(arg)
 	   lang		= "l",
 	   vo		= "V",
         vpo          = "p",
+        pclass  = "G",
+
 	   cstyle       = "s",
      hstyle       = "H"
 	}
@@ -83,7 +87,7 @@ function parse_args(arg)
 	local optarg
 	local optind
 
-	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:X:P:", long_opts)
+	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:X:P:G:", long_opts)
 	for key,value in pairs (optarg) do
 		if key == "h" then
 			usage_complete()
@@ -101,6 +105,9 @@ function parse_args(arg)
         
         elseif key == "P" then
 			options.output_python_dictionary_file = value
+        
+        elseif key == "G" then
+            options.output_python_class_file = value
 
 		elseif key == "D" then
 			options.output_doc_file = value
@@ -220,6 +227,12 @@ end
 if(options.output_python_dictionary_file ~= nil) then
     cgen_generate_init(options.output_python_dictionary_file)
     cgen_generate_python_dictionary_code();
+    cgen_generate_done();
+end
+
+if(options.output_python_class_file ~= nil) then
+    cgen_generate_init(options.output_python_class_file)
+    cgen_generate_python_class_code();
     cgen_generate_done();
 end
 
