@@ -4,7 +4,15 @@ Does not work with 5.2 or 5.3.
 Compilation instructions:
 Just type "make" in the main directory of wbgen2. The resulting file will be "wbgen2".
 
+//MG
+As far as I can see Makefile is called by squish
+squishy is a configuration file for squish.
+New sources must be added to squishy.
+Compilation is done with ./squish
+//MG
+
 There is still some stuff to do:
 - add FIFO register  support
 - CONSTANT registers
 - Verilog primitive library
+
