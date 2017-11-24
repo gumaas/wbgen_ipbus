@@ -6,14 +6,6 @@ class WBreg(object):
 
         self.base = baseaddr
 
-    def __lowestSet(int_type):
-        low = (int_type & -int_type)
-        lowBit = -1
-        while (low):
-            low >>= 1
-            lowBit += 1
-        return(lowBit)
-
     def read(self, addr, mask):
         tmp = self.__read(self.base+addr)
         return self.__read_mask(tmp, mask) ;
