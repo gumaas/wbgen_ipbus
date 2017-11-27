@@ -55,20 +55,30 @@ function cgen_python_class_field_define(field, reg)
    end
                -- emit("\'"..reg.c_prefix.."\' : [ "..DEC_HEX_NS(reg.base)..", 0xffff, "..reg[1].access_bus .."],");
 
-    if ( reg[1].access_bus == 1 or reg[1].access_bus == 2 ) then
+    if ( reg[1].access_bus == 1) then
         emit("");
-        emit("def "..reg.c_prefix.."_"..field.c_prefix.."_rd(self):")
-        indent_right()
-        emit("return self.read("..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset )..")")
-        indent_left()
-      end
-      if ( reg[1].access_bus == 2 or reg[1].access_bus == 4 ) then
+        emit("self."..reg.c_prefix.."_"..field.c_prefix.." = WBReadReg("..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset )..", baseaddr, readfun, writefun)")
+    end
+
+    if ( reg[1].access_bus == 2) then
         emit("");
-        emit("def "..reg.c_prefix.."_"..field.c_prefix.."_wr(self, val):")
-        indent_right()
-        emit("return self.write("..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset )..", val)")
-        indent_left()
-      end
+        emit("self."..reg.c_prefix.."_"..field.c_prefix.." = WBReadWriteReg("..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset )..", baseaddr, readfun, writefun)")
+    end
+
+
+    if ( reg[1].access_bus == 4) then
+        emit("");
+        emit("self."..reg.c_prefix.."_"..field.c_prefix.." = WBWriteReg("..DEC_HEX_NS(reg.base)..", baseaddr, readfun, writefun)")
+    end
+
+
+      -- if ( reg[1].access_bus == 2 or reg[1].access_bus == 4 ) then
+      --   emit("");
+      --   emit("def "..reg.c_prefix.."_"..field.c_prefix.."_wr(self, val):")
+      --   indent_right()
+      --   emit("return self.write("..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset )..", val)")
+      --   indent_left()
+      -- end
 
    -- emit("\'"..reg.c_prefix.."."..field.c_prefix.."\' : [ "..DEC_HEX_NS(reg.base)..", "..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset ) ..", "..access_translate(reg[1].access_bus).. "], " );
    -- emit("<node id=\""..field.c_prefix.."\" mask="..DEC_HEX_NS( 2^( field.size +field.offset) - 2^field.offset ).." permission="..access_translate(field.access_bus).."/>");
@@ -96,24 +106,31 @@ function cgen_python_class_field_masks()
          -- print("DOCREG: ", reg.name, reg.num_fields);
          dbg("DOCREG: ", reg.name, reg.num_fields);
          if(reg.num_fields ~= nil and reg.num_fields > 0) then
-            if ( reg[1].access_bus == 1 or reg[1].access_bus == 2 ) then
-              emit("");
-              emit("def "..reg.c_prefix.."_rd(self):")
-              indent_right()
-              emit("return self.read("..DEC_HEX_NS(reg.base)..", 0xffffffff)")
-              indent_left()
+            
+            indent_right()
+            
+            if ( reg[1].access_bus == 1) then
+                emit("");
+                emit("self."..reg.c_prefix.." = WBReadReg("..DEC_HEX_NS(reg.base)..", 0xffffffff, baseaddr, readfun, writefun)")
             end
-            if ( reg[1].access_bus == 2 or reg[1].access_bus == 4 ) then
-              emit("");
-              emit("def "..reg.c_prefix.."_wr(self, val):")
-              indent_right()
-              emit("return self.write("..DEC_HEX_NS(reg.base)..", 0xffffffff, val)")
-              indent_left()
+
+            if ( reg[1].access_bus == 2) then
+                emit("");
+                emit("self."..reg.c_prefix.." = WBReadWriteReg("..DEC_HEX_NS(reg.base)..", 0xffffffff, baseaddr, readfun, writefun)")
+            end
+
+
+            if ( reg[1].access_bus == 4) then
+                emit("");
+                emit("self."..reg.c_prefix.." = WBWriteReg("..DEC_HEX_NS(reg.base)..", baseaddr, readfun, writefun)")
             end
               -- ..access_translate(reg[1].access_bus).."],");
             if ( reg.num_fields ~= 1) then 
                foreach_subfield(reg, function(field, reg) cgen_python_class_field_define(field, reg) end);
             end
+            
+            indent_left()
+
          end
       end
    );
@@ -224,15 +241,12 @@ function cgen_generate_python_class_code()
    
    cgen_python_class_fileheader();
    
-   emit( "from WBreg import WBreg" );
+   emit( "from WBreg import *" );
    emit( "" );
-   emit( "class Wbreg_"..periph.prefix.."(WBreg):" );
+   emit( "class Wbreg_"..periph.prefix.."(object):" );
    indent_right();
    emit( "" );
    emit( "def __init__(self, baseaddr, readfun, writefun):");
-   indent_right();
-   emit("super(Wbreg_amc, self).__init__(baseaddr, readfun, writefun)");
-   indent_left();
    indent_left();
 
 
