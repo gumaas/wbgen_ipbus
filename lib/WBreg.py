@@ -76,33 +76,3 @@ class WBReadWriteReg(WBreg):
         tmp = self.modify_mask(tmp, self.mask, val);
         return self.iface_write(self.addr, tmp);
         
-
-# class dupa(object):
-
-#     def __init__(self, baseaddr, readfun, writefun):
-#         # super(dupa, self).__init__(baseaddr, readfun, writefun)
-        
-#         self.p2p_0 = WBReadReg(0x0, 0xffffffff, baseaddr, readfun, writefun)
-#         self.p2p_1 = WBWriteReg(0x1, baseaddr, readfun, writefun)
-#         self.p2p_2 = WBReadWriteReg(0x2, 0xffffffff, baseaddr, readfun, writefun)
-    
-
-
-
-
-# def write( addr, val):
-#     print "write addr:0x%08x data:0x%08x" % (addr, val)
-#     return 0
-
-
-# def read( addr):
-#     print "read addr:0x%08x" % (addr)
-#     return 0xaabbccdd
-
-# uut=dupa(0xf0,read, write)
-
-# print "%x" % uut.p2p_0.read()
-# print "%x" % uut.p2p_1.write(2)
-# print "%x" % uut.p2p_2.write(3)
-# print "%x" % uut.p2p_2.read()
-
