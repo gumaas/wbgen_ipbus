@@ -72,8 +72,9 @@ function gen_bus_logic_pipelined_wb(mode)
 
 	local resetcode={};
 	local ackgencode={};
-	local preackcode={};
-	
+    local preackcode={};
+	local nooperation={};
+    
   foreach_field(function(field, reg) 
     table_join(resetcode, field.reset_code_main); 
   end );
@@ -86,10 +87,12 @@ function gen_bus_logic_pipelined_wb(mode)
   foreach_reg({TYPE_REG}, function(reg) 
 	    						foreach_subfield(reg, function(field, reg) 
 							     table_join(ackgencode, field.ackgen_code); 
-							     table_join(preackcode, field.ackgen_code_pre); 
+							     table_join(preackcode, field.ackgen_code_pre);
+                                 table_join(nooperation, field.no_operation);  
 								end);
 							 table_join(ackgencode, reg.ackgen_code); 
 					     table_join(preackcode, reg.ackgen_code_pre); 
+                         table_join(nooperation, reg.no_operation); 
 					    end);
 
 	local fsmcode={};
@@ -176,7 +179,7 @@ function gen_bus_logic_pipelined_wb(mode)
   	fsmcode = { vswitch(vi("rwaddr_reg", address_bus_width-1, address_bus_width - address_bus_select_bits), ramswitchcode); };
   end
 
-	fsmcode = { vif(vand(vequal("wb_cyc_i", 1), vequal("wb_stb_i", 1)), { fsmcode } ); };	
+	fsmcode = { vif(vand(vequal("wb_cyc_i", 1), vequal("wb_stb_i", 1)), { fsmcode }, {nooperation} ); };	
 
 		local code = {
 		vcomment("Some internal signals assignments. For (foreseen) compatibility with other bus standards.");

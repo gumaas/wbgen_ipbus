@@ -88,6 +88,8 @@ function fifo_wire_bus_ports(fifo)
 			fifo_dregs[i].reset_code_main = {};
 			fifo_dregs[i].extra_code = {};
 			fifo_dregs[i].ackgen_code= {};
+			fifo_dregs[i].no_operation= {};
+
 
 --			print("DREG ", i);
 
@@ -178,15 +180,6 @@ function fifo_wire_bus_ports(fifo)
 
 	--		local old_readcode = deepcopy(r.read_code);
 			
--- generate a delay for read request signal
-			table_join(r.extra_code, { vsyncprocess("clk_sys_i", "rst_n_i", {
-																	 vreset(0, {
-																		 va(fifo.full_prefix.."_rdreq_int_d0", 0)
-																	 });
-																	 vposedge ( {
-																		va(fifo.full_prefix.."_rdreq_int_d0",fifo.full_prefix.."_rdreq_int")
-																	 });
-																}) });
 
 			local fields_readcode = {};
 
@@ -198,15 +191,32 @@ function fifo_wire_bus_ports(fifo)
 													
 
 			table_join(r.reset_code_main, { va(fifo.full_prefix.."_rdreq_int", 0) });
+			table_join(r.reset_code_main, { va(fifo.full_prefix.."_state", 0) });
+			table_join(r.no_operation, { va(fifo.full_prefix.."_state", 0) });
 
+			-- don't know how to use case...
 			r.read_code = {
-				 vif(vequal(fifo.full_prefix.."_rdreq_int_d0", 0), { 
-											 va(fifo.full_prefix.."_rdreq_int", vnot(fifo.full_prefix.."_rdreq_int"));
-										}, { -- else
-											 fields_readcode;
-											 va("ack_in_progress", 1);
-											 va(vi("ack_sreg", 0), 1);
-										})
+				va(fifo.full_prefix.."_rdreq_int", 0);
+				vif(vequal(fifo.full_prefix.."_state", 0),{
+					va(fifo.full_prefix.."_rdreq_int", 1);
+					va(fifo.full_prefix.."_state", 1);
+				},
+				{ 
+					vif(vequal(fifo.full_prefix.."_state", 1),{
+						va(fifo.full_prefix.."_state", 2);
+					},
+					{
+						vif(vequal(fifo.full_prefix.."_state", 2),{
+							va(fifo.full_prefix.."_state", 3);
+							fields_readcode;
+							va("ack_in_progress", 1);
+							va(vi("ack_sreg", 0), 1);
+						},
+						{ 
+							va(fifo.full_prefix.."_state", 3);
+						})	
+					})
+				})
 			};
 
 			r.dont_emit_ack_code = true;
@@ -400,7 +410,7 @@ function gen_code_fifo(fifo)
 		 table_join(fifo.signals, { signal (BIT, 0, fifo.full_prefix.."_wrreq_int") });
 	else
 		 table_join(fifo.signals, { signal (BIT, 0, fifo.full_prefix.."_rdreq_int") });
-		 table_join(fifo.signals, { signal (BIT, 0, fifo.full_prefix.."_rdreq_int_d0") });
+		 table_join(fifo.signals, { signal (SLV, 2, fifo.full_prefix.."_state") });
 	end
 
 
