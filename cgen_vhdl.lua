@@ -8,6 +8,7 @@
 -- The VHDL code generator.
 --
 
+
 -- conversion table between VHDL data types and wbgen2 internal data types
 fieldtype_2_vhdl={};
 fieldtype_2_vhdl[BIT]="std_logic";
@@ -71,6 +72,7 @@ function cgen_vhdl_package()
    indent_right();
    emit("");
 
+   cgen_vhdl_sdb_pkg()
 
    emit("");
    emit("-- Input registers (user design -> WB slave)");
@@ -191,6 +193,53 @@ function cgen_vhdl_port_struct(direction)
       emit(");");
 
 end
+
+--function to generate the SDB descriptor for the VHDL package
+md5 = require "md5" --sudo apt-get install lua-md5
+function cgen_vhdl_sdb_pkg()
+
+    ---In order to print sdb descriptor you must have sdb_vendor ID
+    if(periph.sdb_vendor ~= nil) then
+
+    emit("");
+    emit("-- Device descriptor for" .. periph.name);
+    emit("constant c_" ..string.upper(periph.hdl_entity).."_SDB   :   t_sdb_device  :=");
+    emit("(");
+    indent_right();
+    emit("abi_class     => x\"0000\",");
+    emit("abi_ver_major => x\"01\",");
+    emit("abi_ver_minor => x\"01\",");
+    emit("wbd_endian    => c_sdb_endian_big,");
+    emit("wbd_width     => x\"7\",");
+    emit("sdb_component =>");
+    emit("(");
+    indent_right();
+    emit("addr_first  => x\"0000000000000000\",");
+    --Bad hack to obtain maximum size
+    if ((periph.regcount+periph.fifocount+periph.irqcount)*4 <256 and periph.ramcount ==0) then
+    	emit("addr_last   => x\"00000000000000ff\",");
+    else
+    	emit("addr_last   => x\"000000000000ffff\",");
+    end
+    emit("product     =>");
+    emit("(");
+    emit("vendor_id => x\""..string.format("%016X",periph.sdb_vendor).."\",");
+    emit("device_id => x\""..string.sub(md5.sumhexa(periph.hdl_entity),0,8).."\",         -- echo -n \""..periph.hdl_entity.."\" | md5sum - | cut -c1-8");
+    if(periph.sdb_version == nil) then 
+        periph.sdb_version=0
+    end
+    emit("version   => x\""..string.format("%08X",periph.sdb_version).."\",");
+    emit("date      => x\""..os.date("%Y%m%d").."\",");
+    emit("name      => \""..string.format("%-19s",string.upper(string.gsub(periph.hdl_entity,"_","-"))).."\"");
+    emit(")");
+    indent_left();
+    emit(")");
+    indent_left();
+    emit(");");
+    emit("");
+    end 
+end
+
 
 -- function generates a VHDL file header (some comments and library/package include definitions).
 function cgen_vhdl_header(file_name)

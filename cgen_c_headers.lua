@@ -17,7 +17,7 @@
 -- NAME_R - read access macro extracting the value of certain field from the register: 
 -- field1_value = FIELD1_R(regs_struct->reg);
 --
-function cgen_c_field_define(field, reg)
+function cgen_c_field_define(field, reg, index)
    local prefix;
    -- anonymous field?
    if(field.c_prefix == nil) then
@@ -25,10 +25,26 @@ function cgen_c_field_define(field, reg)
    else
       prefix=string.upper(periph.c_prefix).."_"..string.upper	(reg.c_prefix).."_"..string.upper(field.c_prefix);	
    end
-   
+
+   if(field.nbfp == nil or field.nbfp > field.size) then
+      field.nbfp=0;
+   end
    
    emit("");
    emit("/* definitions for field: "..field.name.." in reg: "..reg.name.." */");
+   if(options.c_reg_style == "extended")  then
+      rw_table = {[READ_ONLY] = "READ_ONLY", [WRITE_ONLY] = "WRITE_ONLY", [READ_WRITE] = "READ_WRITE" }
+      emit(string.format("%-45s %d", "#define "..prefix.."_INDEX", index));
+      emit(string.format("%-45s %s", "#define "..prefix.."_PREFIX", "\""..field.c_prefix.."\""));
+      emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..field.name.."\""));
+      emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..field.description:gsub("\n.*", "").."\")"));
+      emit(string.format("%-45s %s", "#define "..prefix.."_ACCESS", "WBGEN2_"..rw_table[field.access_bus]));
+      emit(string.format("%-45s %d", "#define "..prefix.."_NBFP", field.nbfp));
+      if(field.type == BIT or field.type == MONOSTABLE)  then
+        emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
+        emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
+      end
+   end
    
    -- for bit-type fields, emit only masks
    if(field.type == BIT or field.type == MONOSTABLE)  then
@@ -64,12 +80,14 @@ end
 
 -- iterates all regs and rams and generates appropriate #define-s
 function cgen_c_field_masks()
+   local index;
    foreach_reg({TYPE_REG}, function(reg)
 			      dbg("DOCREG: ", reg.name, reg.num_fields);
 			      if(reg.num_fields ~= nil and reg.num_fields > 0) then
 				 emit("");
 				 emit("/* definitions for register: "..reg.name.." */");
-				 foreach_subfield(reg, function(field, reg) cgen_c_field_define(field, reg) end);
+				 index=0;
+				 foreach_subfield(reg, function(field, reg) cgen_c_field_define(field, reg, index); index=index+1; end);
 			      end
 			   end);
    
@@ -111,10 +129,20 @@ function cgen_c_fileheader()
    emit("");
    emit("#ifndef __WBGEN2_MACROS_DEFINED__");
    emit("#define __WBGEN2_MACROS_DEFINED__");
-   emit("#define WBGEN2_GEN_MASK(offset, size) (((1<<(size))-1) << (offset))");
+   emit("#define WBGEN2_GEN_MASK(offset, size) (((1ULL<<(size))-1) << (offset))");
    emit("#define WBGEN2_GEN_WRITE(value, offset, size) (((value) & ((1<<(size))-1)) << (offset))");
    emit("#define WBGEN2_GEN_READ(reg, offset, size) (((reg) >> (offset)) & ((1<<(size))-1))");
    emit("#define WBGEN2_SIGN_EXTEND(value, bits) (((value) & (1<<bits) ? ~((1<<(bits))-1): 0 ) | (value))");
+   if(options.c_reg_style == "extended")  then
+		emit("#define WBGEN2_READ_ONLY\t0x01");
+		emit("#define WBGEN2_WRITE_ONLY\t0x10");
+		emit("#define WBGEN2_READ_WRITE\t(WBGEN2_READ_ONLY | WBGEN2_WRITE_ONLY)");
+		emit("#ifdef __WBGEN2_ENABLE_DESC__ ");
+		emit("#define WBGEN2_DESC(desc) desc");
+		emit("#else");
+		emit("#define WBGEN2_DESC(desc) \"\" ");
+		emit("#endif");
+   end
    emit("#endif");
    emit("");
 end
@@ -187,9 +215,19 @@ end
 
 
 function cgen_c_defines()
+   emit(string.format(""))
+   emit(string.format(""))
    foreach_reg({TYPE_REG}, function(reg)
+                  local prefix = string.upper(periph.c_prefix).."_REG_"..string.upper(reg.c_prefix);
 			      emit(string.format("/* [0x%x]: REG "..reg.name.." */", reg.base * DATA_BUS_WIDTH / 8));
-			      emit("#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(reg.c_prefix).." "..string.format("0x%08x", reg.base * DATA_BUS_WIDTH/8));
+			      if(options.c_reg_style == "extended")  then
+			         emit(string.format("%-45s %s", "#define "..prefix.."_PREFIX", "\""..reg.c_prefix.."\""));
+			         emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..reg.name.."\""));
+			         emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..reg.description:gsub("\n.*", "").."\")"));
+			      end
+			      emit(string.format("%-45s %s","#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(reg.c_prefix),
+			      string.format("0x%08x", reg.base * DATA_BUS_WIDTH/8)));
+			      emit(string.format(""))
 			   end);
 
 end
@@ -207,7 +245,12 @@ function cgen_generate_c_header_code()
    else
       cgen_c_defines();
    end
-   
-   emit("#endif");
+
+   emit("");
+   emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_PREFIX", "\""..periph.c_prefix.."\""));
+   emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_NAME", "\""..periph.name.."\""));
+   emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_DESC", "WBGEN2_DESC(\""..periph.description:gsub("\n.*", "").."\")"));
+
+   emit("\n#endif");
    cgen_write_current_snippet();
 end
