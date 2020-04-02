@@ -52,6 +52,7 @@ local commands_string = [[options:
                           (necessary with --hstyle=record)
   -P, --po                Generate Python dictionary address map       
   -G, --pclass            Generate Python class
+  -X, --xo                Generate ipbus configuration xml
 
 wbgen2 (c) Tomasz Wlostowski/CERN BE-CO-HT 2010-2012]]
 
